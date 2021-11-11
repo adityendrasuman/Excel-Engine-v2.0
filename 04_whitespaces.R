@@ -58,7 +58,7 @@ glue::glue("\n\n") %>% f_log_string(g_file_log)
 
 # Save relevant datasets ----
 save(dt_01, file = "dt_01.Rda")
-
+ 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
 
