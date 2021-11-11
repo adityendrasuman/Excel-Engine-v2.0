@@ -10,7 +10,8 @@ args <- commandArgs(trailingOnly=T)
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
-load("env_small.RData")
+load("env.RData")
+load("dt_02.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -27,7 +28,7 @@ glue::glue("Gets all the column names from the data into the interface")
 glue::glue("\n") %>% f_log_string(g_file_log)
 #====================================================
 
-d_02 %>%
+dt_02 %>%
   colnames() %>%
   write.table(file = file.path("temp.csv"), sep=",", col.names = F, row.names = F)
 
@@ -41,9 +42,7 @@ glue::glue("\n\n") %>% f_log_string(g_file_log)
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
 
 # save environment in a session temp variable ----
-# save.image(file=file.path(g_wd, "env.RData"))
-# rm(d_01, d_01_A, d_01_B, d_01_C, d_01_D, d_01_Octa9)
-# save.image(file=file.path(g_wd, "env_small.RData"))
+save.image(file=file.path(g_wd, "env.RData"))
 
 print(glue::glue("\n\nAll done!"))
 for(i in 1:3){

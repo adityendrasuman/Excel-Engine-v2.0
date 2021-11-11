@@ -29,22 +29,24 @@ glue::glue("This code uploads newly created columns into the R environment and d
 #====================================================
 
 print(glue::glue("Importing clean data ..."))
-d_02 <- f_read_xl(g_file_path, namedRegion = "cd_all", colNames = T)
-print(glue::glue("Imported data has {ncol(d_02)} columns and {nrow(d_02)} rows"))
+dt_02 <- f_read_xl(g_file_path, namedRegion = "cd_all", colNames = T)
+print(glue::glue("Imported data has {ncol(dt_02)} columns and {nrow(dt_02)} rows"))
 
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n") %>% f_log_string(g_file_log)
+
+# Save relevant datasets ----
+save(dt_02, file = "dt_02.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
 
 # save environment in a session temp variable ----
 save.image(file=file.path(g_wd, "env.RData"))
-rm(d_01, d_01_A, d_01_B, d_01_C, d_01_D, d_01_Octa9)
-save.image(file=file.path(g_wd, "env_small.RData"))
 
 # Close the R code
 print(glue::glue("\n\nAll done!"))
