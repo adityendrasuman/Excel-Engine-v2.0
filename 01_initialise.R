@@ -52,10 +52,16 @@ g_tick                              <- "\u2713"
 g_cross                             <- "\u2715"
 
 g_file_log                          <- file.path(g_excel_frontend_dir, "Latest R logs.txt")
-g_file_plot                         <- file.path(g_excel_frontend_dir, "Latest plots.pdf")
 
 unlink(g_file_log)
-unlink(g_file_plot)
+
+if (args[6] == "reset") {
+  all <- dir(".",  pattern=".*")
+  keep <- dir(".",  pattern=".+\\.R$")
+  junk <- all[! all %in% keep]
+  file.remove(junk) %>% 
+    invisible()
+} 
 #====================================================
 
 # Log of run ----
