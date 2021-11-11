@@ -12,6 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
+load("dt_01.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -37,7 +38,7 @@ supplied_weird_chr <- f_read_xl(g_file_path, namedRegion = "wc1_R", colNames = F
 weird_chr <- paste(c("[^\x01-\x7F]", supplied_weird_chr[[1]]), collapse = "|")
 
 print(glue::glue("Searching for weird characters..."))
-summary <- f_id_char(d_01, weird_chr)
+summary <- f_id_char(dt_01, weird_chr)
 
 summary %>% 
   write.table(file = file.path("temp.csv"), sep=",", col.names = F, row.names = F)
@@ -45,6 +46,7 @@ summary %>%
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 
