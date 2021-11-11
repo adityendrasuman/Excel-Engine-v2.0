@@ -34,18 +34,18 @@ threshold = as.numeric(args[2])
 
 glue::glue("Searching for strings with {threshold} or more characters...") %>% print()
 
-list_of_variables <- d_01_B %>%
+list_of_variables <- dt_01_B %>%
   colnames()
 
 summary <- purrr::map_dfr(list_of_variables, function(var) {
   
-  temp <- d_01_B %>%
+  temp <- dt_01_B %>%
     pull(!!var) %>%
     nchar() %>%
     max(na.rm = TRUE)
   
   if (temp >= threshold) {
-    d_01_B %>%
+    dt_01_B %>%
       select(response = !!var) %>%
       count(response) %>%
       mutate(no_of_char = nchar(response),
