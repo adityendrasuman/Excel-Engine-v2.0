@@ -12,6 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
+load("dt_01_A.Rda")
 
 # load libraries ----
 error = f_libraries(
@@ -50,7 +51,7 @@ make_col_names <- function(vector) {
   })
 }
 
-d_01_B <- d_01_A %>% 
+dt_01_B <- dt_01_A %>% 
   mutate(temp_id = row_number())
 
 glue::glue("Importing 'Live Capture' column names from the excel interface...") %>% print()
@@ -73,13 +74,13 @@ if (is.null(nrow(col_list))) {
   
   for (i in 1:nrow(col_list)){
     
-    columns <- d_01_B %>% 
+    columns <- dt_01_B %>% 
       select(matches(col_list[i, 2])) %>% 
       colnames() %>% 
       c(columns) %>% 
       unique()
     
-    questions <- d_01_B %>% 
+    questions <- dt_01_B %>% 
       select(matches(col_list[i, 2])) %>% 
       colnames() %>% 
       stringr::str_extract(col_list[i, 1]) %>% 
@@ -101,7 +102,7 @@ if (is.null(nrow(col_list))) {
   for (q in questions) {
     
     summary3 <- summary3 %>% 
-      rbind(d_01_B %>%
+      rbind(dt_01_B %>%
               select(matches(paste0("^.*", q, ".*$"))) %>%
               colnames() %>% 
               intersect(columns) %>% 
@@ -139,13 +140,13 @@ if (is.null(nrow(col_list))) {
       
       # create a variable temp_all_values in the main file that combines values from all relevant variables
     
-      list_of_columns <- d_01_B %>%
+      list_of_columns <- dt_01_B %>%
         select(matches(paste0("^.*", q, ".*$"))) %>%
         colnames() %>% 
         intersect(columns) %>% 
         unlist()
       
-      table_with_relevant_cols <- d_01_B %>%
+      table_with_relevant_cols <- dt_01_B %>%
         select(temp_id, all_of(list_of_columns)) %>%
         mutate(temp_all_values = "")
       
@@ -162,10 +163,10 @@ if (is.null(nrow(col_list))) {
       table_with_relevant_cols <- table_with_relevant_cols %>%
         select(temp_id, temp_all_values)
     
-      d_01_B <- d_01_B %>%
+      dt_01_B <- dt_01_B %>%
         left_join(table_with_relevant_cols, by = "temp_id")
     
-      column_values <- d_01_B %>%
+      column_values <- dt_01_B %>%
         select(all_of(list_of_columns)) %>%
         unlist() %>%
         table() %>%
@@ -194,7 +195,7 @@ if (is.null(nrow(col_list))) {
     
         search_term = column_values[j, "value_colnames"]
     
-        d_01_B <- d_01_B %>%
+        dt_01_B <- dt_01_B %>%
           mutate(!!column_new := case_when(
             stringr::str_detect(temp_all_values, search_term) ~ "Yes",
             stringr::str_detect(temp_all_values, search_term, negate = T) ~ "No",
@@ -203,7 +204,7 @@ if (is.null(nrow(col_list))) {
           )
         )
     
-        d_01_B %>%
+        dt_01_B %>%
           select(all_of(column_new), all_of(list_of_columns)) %>%
           group_by_all() %>% 
           count() %>% 
@@ -220,14 +221,14 @@ if (is.null(nrow(col_list))) {
       counter = counter + 1
       utils::setTxtProgressBar(pb, counter)
       
-      d_01_B <- d_01_B %>%
+      dt_01_B <- dt_01_B %>%
         select(-temp_all_values) 
         # %>% select(-all_of(list_of_columns))
     }
     
     # End of question category loop
     
-    d_01_B <- d_01_B %>%
+    dt_01_B <- dt_01_B %>%
       select(-temp_id)
     
     summary2 %>% 
@@ -243,6 +244,9 @@ if (is.null(nrow(col_list))) {
 glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
+
+# Save relevant datasets ----
+save(dt_01_B, file = "dt_01_B.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
