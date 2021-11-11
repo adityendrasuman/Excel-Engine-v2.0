@@ -29,7 +29,7 @@ glue::glue("Imports cleaned-up data from the R environment into the interface") 
 
 #====================================================
 file_name <- file.path(g_excel_backend_temp_dir, "create_new_columns_in_r.R")
-start <- 23
+start <- 26
 file.lines <- scan(file_name, what=character(), skip=start-1, sep='\n', quiet = T) 
 file.lines.collapsed <- paste(file.lines, collapse='\n')
 source(textConnection(file.lines.collapsed), print.eval = TRUE, echo = F)
