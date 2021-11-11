@@ -12,6 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
+load("dt_01_C.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -33,7 +34,7 @@ map <- f_read_xl(g_file_path, namedRegion = "body_numeric", colNames = F) %>%
   unique()%>% 
   filter_all(any_vars(!is.na(.)))
 
-d_01_D <- d_01_C
+dt_01_D <- dt_01_C
 
 print(glue::glue("Ensuring all numeric columns are logged correctly..."))
 
@@ -49,12 +50,12 @@ if (length(var_numeric) > 0){
     tryCatch(
       {
         # try part
-        d_01_D[,var] = as.numeric(d_01_D[,var])
+        dt_01_D[,var] = as.numeric(dt_01_D[,var])
       },
       warning = function(w){
         # catch part
         print(glue::glue("!! String values in numeric column '{var}' that will generate 'NA':"))
-        d_01_D %>% 
+        dt_01_D %>% 
           select(all_of(var)) %>%
           table() %>% 
           as.data.frame() %>% 
@@ -67,11 +68,11 @@ if (length(var_numeric) > 0){
       },
       finally={
         # do part - replace all such string response with octa-9 and blanks with NA
-        d_01_D <- d_01_D %>% 
+        dt_01_D <- dt_01_D %>% 
           mutate(!!var_sym := ifelse(stringr::str_detect(!!var_sym, "^[+-]?(\\d*\\.?\\d+|\\d+\\.?\\d*)$", negate = T) &
                                      stringr::str_detect(!!var_sym, "^\\s*$", negate = T), "99999999", !!var_sym))
         
-        d_01_D[,var] <- as.numeric(d_01_D[,var]) %>%
+        dt_01_D[,var] <- as.numeric(dt_01_D[,var]) %>%
           suppressWarnings()
       }
     )
@@ -86,7 +87,7 @@ var_char <- char[["X1"]]
 
 if (length(var_char) > 0){
   for (var in var_char){
-    d_01_D[,var] = as.character(d_01_D[,var])
+    dt_01_D[,var] = as.character(dt_01_D[,var])
   }
 }
 
@@ -110,7 +111,7 @@ if (length(var_na) > 0){
     
     condn <- paste0(var, " %in% ", condn)
     
-    d_01_D <- d_01_D %>% 
+    dt_01_D <- dt_01_D %>% 
       mutate(!!var_sym := ifelse(eval(parse(text=condn)), 99999999, !!var_sym))
   }
 }
@@ -124,7 +125,7 @@ map_outlier <- map %>%
 
 var_outlier <- map_outlier[["X1"]]
 
-d_01_Octa9 <- d_01_D
+dt_01_Octa9 <- dt_01_D
 
 if (length(var_outlier) > 0){
   
@@ -147,33 +148,33 @@ if (length(var_outlier) > 0){
     
     condn <- ifelse(is_empty(condn), "F", paste0(var, " %in% ", condn))
     
-    d_01_Octa9[, var] <- ifelse(d_01_Octa9[, var] < th1_ | d_01_Octa9[, var] > th2_, 99999999, d_01_Octa9[, var])
+    dt_01_Octa9[, var] <- ifelse(dt_01_Octa9[, var] < th1_ | dt_01_Octa9[, var] > th2_, 99999999, dt_01_Octa9[, var])
     
-    d_01_D[, var] <- ifelse(d_01_Octa9[, var] == 99999999, NA, d_01_Octa9[, var])
+    dt_01_D[, var] <- ifelse(dt_01_Octa9[, var] == 99999999, NA, dt_01_Octa9[, var])
     
-    min_    <- min(d_01_D[, var], na.rm = T) %>% suppressWarnings()
-    mean_   <- mean(d_01_D[, var], na.rm = T)
-    median_ <- median(d_01_D[, var], na.rm = T)
-    max_    <- max(d_01_D[, var], na.rm = T) %>% suppressWarnings()
-    sd_     <- sd(d_01_D[, var], na.rm = T)
+    min_    <- min(dt_01_D[, var], na.rm = T) %>% suppressWarnings()
+    mean_   <- mean(dt_01_D[, var], na.rm = T)
+    median_ <- median(dt_01_D[, var], na.rm = T)
+    max_    <- max(dt_01_D[, var], na.rm = T) %>% suppressWarnings()
+    sd_     <- sd(dt_01_D[, var], na.rm = T)
     
     summary[i, "var"] <- var
     
-    summary[i, "# Values"] <- d_01_Octa9 %>% 
+    summary[i, "# Values"] <- dt_01_Octa9 %>% 
       filter(!is.na(!!var_sym)) %>%
       filter(var != "") %>% 
       nrow()
       
-    summary[i, "# NAed (non-numeric)"] <- d_01_C %>% 
+    summary[i, "# NAed (non-numeric)"] <- dt_01_C %>% 
       filter(stringr::str_detect(!!var_sym, "^[+-]?(\\d*\\.?\\d+|\\d+\\.?\\d*)$", negate = T), 
              stringr::str_detect(!!var_sym, "^\\s*$", negate = T)) %>% 
       nrow()
       
-    summary[i, "# NAed (NA proxies)"] <- d_01_C %>% 
+    summary[i, "# NAed (NA proxies)"] <- dt_01_C %>% 
       filter(eval(parse(text=condn))) %>% 
       nrow()
     
-    summary[i, "# NAed (threshold)"] <- d_01_Octa9 %>% 
+    summary[i, "# NAed (threshold)"] <- dt_01_Octa9 %>% 
       filter(!!var_sym != 99999999) %>% 
       filter(!!var_sym < th1_ | !!var_sym > th2_) %>% 
       nrow()
@@ -187,12 +188,12 @@ if (length(var_outlier) > 0){
     summary[i, "median"] <- round(median_, 2)
     summary[i, "max"] <- round(max_, 2)
     
-    summary[i, "count below -3SD"] <- d_01_Octa9 %>% 
+    summary[i, "count below -3SD"] <- dt_01_Octa9 %>% 
       filter(!!var_sym != 99999999) %>% 
       filter(!!var_sym < mean_ - 3*sd_) %>% 
       nrow()
     
-    summary[i, "count above +3SD"] <- d_01_Octa9 %>% 
+    summary[i, "count above +3SD"] <- dt_01_Octa9 %>% 
       filter(!!var_sym != 99999999) %>% 
       filter(!!var_sym > mean_ + 3*sd_) %>% 
       nrow()
@@ -207,13 +208,15 @@ if (length(var_outlier) > 0){
   }
 }
 
-d_01_Octa9 %>%
-  saveRDS(file = file.path("d_01_Octa9.Rds"))
 #====================================================
 
 # Log of run ----
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
+
+# Save relevant datasets ----
+save(dt_01_D, file = "dt_01_D.Rda")
+save(dt_01_Octa9, file = "dt_01_Octa9.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
