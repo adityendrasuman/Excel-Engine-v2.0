@@ -30,8 +30,8 @@ glue::glue("\n") %>% f_log_string(g_file_log)
 #====================================================
 
 glue::glue("Importing raw data from the excel interface...") %>% print()
-d_01 <- f_read_xl(g_file_path, namedRegion = "raw_data", colNames = T)
-glue::glue("Imported data has {ncol(d_01)} columns and {nrow(d_01)} rows") %>% f_log_string(g_file_log)
+dt_01 <- f_read_xl(g_file_path, namedRegion = "raw_data", colNames = T)
+glue::glue("Imported data has {ncol(dt_01)} columns and {nrow(dt_01)} rows") %>% f_log_string(g_file_log)
 
 #====================================================
 
@@ -39,6 +39,9 @@ glue::glue("Imported data has {ncol(d_01)} columns and {nrow(d_01)} rows") %>% f
 glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
+
+# Save relevant datasets ----
+save(dt_01, file = "dt_01.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
