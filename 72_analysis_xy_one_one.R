@@ -12,7 +12,8 @@ args <- commandArgs(trailingOnly=T)
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
-load("env_small.RData")
+load("env.RData")
+load("dt_02.Rda")
 
 source(file.path(g_excel_backend_temp_nospace_dir_rf, "00_functions.R"))
 
@@ -85,11 +86,11 @@ if (args[2] == "all") {
     q <- query %>% 
       question_creator(row)
     
-    answer <- d_02 %>% 
+    answer <- dt_02 %>% 
       f_answer_creator(q[[1]], q[[2]], q[[3]], q[[4]]) %>% 
       suppressWarnings()
     
-    numeric_y = ifelse(class(d_02[[q[[2]]]]) == "numeric", T, F)
+    numeric_y = ifelse(class(dt_02[[q[[2]]]]) == "numeric", T, F)
     
     graph[[row]] <- answer %>% 
       f_graph_1(q[[4]], q[[5]], q[[6]], q[[3]], numeric_y)
@@ -109,11 +110,11 @@ if (args[2] == "all") {
   q <- query %>% 
     question_creator(row)
   
-  answer <- d_02 %>% 
+  answer <- dt_02 %>% 
     f_answer_creator(q[[1]], q[[2]], q[[3]], q[[4]]) %>% 
     suppressWarnings()
   
-  numeric_y = ifelse(class(d_02[[q[[2]]]]) == "numeric", T, F)
+  numeric_y = ifelse(class(dt_02[[q[[2]]]]) == "numeric", T, F)
   
   graph[[row]] <- answer %>% 
     f_graph_1(q[[4]], q[[5]], q[[6]], q[[3]], numeric_y)
@@ -126,6 +127,7 @@ graph %>%
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 

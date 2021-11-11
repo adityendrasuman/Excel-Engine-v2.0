@@ -12,7 +12,8 @@ args <- commandArgs(trailingOnly=T)
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
-load("env_small.RData")
+load("env.RData")
+load("dt_02.Rda")
 
 source(file.path(g_excel_backend_temp_nospace_dir_rf, "00_functions.R"))
 
@@ -351,7 +352,7 @@ for (q_no in unique(data$X1)){
             filter(Var.type == "[Y]") %>% 
             pull(Variable)
           
-          all_y <- d_02 %>% 
+          all_y <- dt_02 %>% 
             select(matches(all_y_key)) %>% 
             colnames()
           
@@ -378,13 +379,13 @@ for (q_no in unique(data$X1)){
         
         for (q in question){
           
-          numeric_y <- ifelse(class(d_02[[q[[2]]]]) == "numeric", T, F)
+          numeric_y <- ifelse(class(dt_02[[q[[2]]]]) == "numeric", T, F)
           
           y_label <- d_colmap %>%
             filter(X1 == q[[2]]) %>%
             pull(X2)
           
-          answer <- d_02 %>% 
+          answer <- dt_02 %>% 
             f_answer_creator(q[[1]], q[[2]], q[[3]], q[[4]]) %>% 
             suppressWarnings() %>% 
             mutate(question = y_label) %>% 

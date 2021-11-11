@@ -12,7 +12,8 @@ args <- commandArgs(trailingOnly=T)
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
-load("env_small.RData")
+load("env.RData")
+load("dt_02.Rda")
 
 source(file.path(g_excel_backend_temp_nospace_dir_rf, "00_functions.R"))
 
@@ -84,7 +85,7 @@ for (n_y in 1:length(all_y)){
     rlang::sym()
   y_label = desc_y[[n_y]]
   
-  numeric_y = ifelse(class(d_02[[y]]) == "numeric", T, F)
+  numeric_y = ifelse(class(dt_02[[y]]) == "numeric", T, F)
   
   filter_y <- d_skip %>% 
     filter(q_no == y) %>% 
@@ -96,7 +97,7 @@ for (n_y in 1:length(all_y)){
     
     x_label = "Overall"
     
-    answer <- d_02 %>% 
+    answer <- dt_02 %>% 
       f_answer_creator(s, y_sym, filter_y, x_sym) %>% 
       suppressWarnings() 
     
@@ -111,7 +112,7 @@ for (n_y in 1:length(all_y)){
     
     x_label = desc_x[[n_x]]
       
-    answer <- d_02 %>% 
+    answer <- dt_02 %>% 
       f_answer_creator(s, y_sym, filter_y, x_sym) %>% 
       suppressWarnings() 
     
@@ -129,6 +130,7 @@ graph %>%
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 

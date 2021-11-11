@@ -12,7 +12,8 @@ args <- commandArgs(trailingOnly=T)
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
-load("env_small.RData")
+load("env.RData")
+load("dt_02.Rda")
 
 source(file.path(g_excel_backend_temp_nospace_dir_rf, "00_functions.R"))
 
@@ -208,11 +209,11 @@ if (args[2] == "all") {
     q <- data %>% 
       question_creator(q_no)
     
-    answer_actual_sample <- d_02 %>% 
+    answer_actual_sample <- dt_02 %>% 
       f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]], 
                   forced_sample = F, ignore_weight_responses = c())
 
-    answer_forced_sample <- d_02 %>% 
+    answer_forced_sample <- dt_02 %>% 
       f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]],
                   forced_sample = T, ignore_weight_responses = c())
 
@@ -228,11 +229,11 @@ if (args[2] == "all") {
   q <- data %>% 
     question_creator(q_no)
   
-  answer_forced_sample <- d_02 %>% 
+  answer_forced_sample <- dt_02 %>% 
     f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]],
                 forced_sample = T, ignore_weight_responses = c())
   
-  answer_actual_sample <- d_02 %>% 
+  answer_actual_sample <- dt_02 %>% 
     f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]], 
                 forced_sample = F, ignore_weight_responses = c())
   
@@ -249,6 +250,7 @@ graph %>%
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 
