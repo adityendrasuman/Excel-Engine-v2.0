@@ -42,7 +42,8 @@ summary <- purrr::map_dfr(list_of_variables, function(var) {
   temp <- dt_01_B %>%
     pull(!!var) %>%
     nchar() %>%
-    max(na.rm = TRUE)
+    max(na.rm = TRUE) %>% 
+    suppressWarnings()
   
   if (temp >= threshold) {
     dt_01_B %>%
