@@ -12,6 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
+load("dt_01.Rda")
 
 # load libraries ----
 error = f_libraries(
@@ -30,26 +31,33 @@ glue::glue("\n") %>% f_log_string(g_file_log)
 #====================================================
 
 print(glue::glue("Trimming whitespaces..."))
-cols_to_be_rectified <- names(d_01)[vapply(d_01, is.character, logical(1))]
-d_01[,cols_to_be_rectified] <- lapply(d_01[,cols_to_be_rectified], trimws)
-d_01[,cols_to_be_rectified] <- lapply(d_01[,cols_to_be_rectified], stringr::str_trim)
+cols_to_be_rectified <- names(dt_01)[vapply(dt_01, is.character, logical(1))]
+dt_01[,cols_to_be_rectified] <- lapply(dt_01[,cols_to_be_rectified], trimws)
+dt_01[,cols_to_be_rectified] <- lapply(dt_01[,cols_to_be_rectified], stringr::str_trim)
 
 whitespaces <- paste(c("^\\s+.+\\s+$", ".+\\s+$", "^\\s+.+$"), collapse = "|")
-summary <- f_id_char(d_01, whitespaces)
+summary <- f_id_char(dt_01, whitespaces)
 
 if(is.null(nrow(summary))) {
-  glue::glue("Any leading or lagging white spaces has been removed") %>% f_log_string(g_file_log)
+  glue::glue("All leading or lagging white spaces have been removed") %>% f_log_string(g_file_log)
 } else if(nrow(summary) > 0) {
   glue::glue("All white spaces could not be removed") %>% f_log_string(g_file_log)
-  glue::glue("Please remove manually in the raw data and upload it again") %>% f_log_string(g_file_log)
+  glue::glue("Please check log file for the values that could not be removed") %>% f_log_string(g_file_log)
 }
 
 #====================================================
 
 # Log of run ----
+if (!is.null(nrow(summary))){
+  summary %>% f_log_table("List of White spaces that could not be removed", g_file_log)
+}
+
 glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
+
+# Save relevant datasets ----
+save(dt_01, file = "dt_01.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
