@@ -31,7 +31,9 @@ glue::glue("\n") %>% f_log_string(g_file_log)
 
 #====================================================
 
-rm(list = ls(pattern = "^d_[0-9]+"))
+junk <- dir(path=g_wd,  pattern="^dt_.+.Rda")
+file.remove(junk) %>% 
+  invisible()
 glue::glue("Success: All datasets deleted") %>% f_log_string(g_file_log)
 
 #====================================================
