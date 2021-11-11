@@ -12,6 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
+load("dt_01_D.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -24,7 +25,7 @@ glue::glue("\n") %>% print()
 
 # Log of run ----
 glue::glue("===================== Running '41_download.R' =====================") %>% f_log_string(g_file_log) 
-glue::glue("This code downloadss cleanedup data from the R environment for importing into the interface") %>% f_log_string(g_file_log)
+glue::glue("Imports cleaned-up data from the R environment into the interface") %>% f_log_string(g_file_log)
 
 #====================================================
 file_name <- file.path(g_excel_backend_temp_dir, "create_new_columns_in_r.R")
@@ -33,7 +34,7 @@ file.lines <- scan(file_name, what=character(), skip=start-1, sep='\n', quiet = 
 file.lines.collapsed <- paste(file.lines, collapse='\n')
 source(textConnection(file.lines.collapsed), print.eval = TRUE, echo = F)
 
-d <- create_new_col(d_01_D)
+d <- create_new_col(dt_01_D)
 df_out <- d[[1]]
 d_skip_newcol <- d[[2]]
 
@@ -52,8 +53,6 @@ rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
 
 # save environment in a session temp variable ----
 save.image(file=file.path(g_wd, "env.RData"))
-rm(d_01, d_01_A, d_01_B, d_01_C, d_01_D, d_01_Octa9)
-save.image(file=file.path(g_wd, "env_small.RData"))
 
 # Close the R code
 print(glue::glue("\n\nAll done!"))
