@@ -60,7 +60,8 @@ if (args[6] == "reset") {
   keep <- dir(".",  pattern=".+\\.R$")
   junk <- all[! all %in% keep]
   file.remove(junk) %>% 
-    invisible()
+    invisible() %>% 
+    suppressWarnings()
 } 
 #====================================================
 
