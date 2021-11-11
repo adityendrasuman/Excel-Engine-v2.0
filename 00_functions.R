@@ -872,43 +872,52 @@ f_grouper <- function(data){
 }
 
 #___________________----
-f_segmentor <- function(df, y, x, s, forced_sample, ignore_weight_responses = c()){
+
+f_sub_segmentor <- function(df, 
+                          y, 
+                          dir,
+                          file_nm,
+                          with_weight, 
+                          ignore_weight_responses = c(), 
+                          weight_col){
   
-  if (s %in% colnames(d_summ)){weight_col = d_summ["WEIGHT", s]}
+  # browser()
+  # ** setting up
   
-  df <- df %>% 
-    select(c(y, x, weight_col))
+  if (!dir.exists(paste0(dir, "/"))) dir.create(dir)
+  
+  outfile <- file.path(dir, paste0(file_nm, ifelse(with_weight == T, "_forced", "_organic"), ".txt"))
+  unlink(outfile)
   
   # remove NA
   removed_df <- df %>%  
     filter_all(any_vars(is.na(.)))
-  
-  print(glue::glue("{nrow(removed_df)} rows removed during classification due to NAs"))
+  print(paste0(nrow(removed_df), " rows removed during classification due to NAs"))
   
   df <- df %>% 
-    tidyr::drop_na()
+    drop_na()
+  # browser()
   
   # Capturing name of y variable
-  var_name <- y %>% 
-    rlang::sym()
+  var_name <- y
   
-  min_bucket_size <- 100
+  min_split_size <- 30
   
-  train_control <- caret::trainControl(
+  train_control <- trainControl(
     method = "repeatedcv",
     number = 10,
     repeats = 3
   )
   
   # ** create data for tree  
+  
   df <- df %>%
     filter(!is.na(!!var_name), trimws(!!var_name) != "") %>% 
     mutate_if(is_character, as_factor) 
   
-  if (forced_sample == T) {
-    temp <- janitor::tabyl(df, !!var_name) %>%
-      filter(!(!!var_name %in% ignore_weight_responses)) %>% 
-      mutate_if(is.factor, as.character)
+  if (with_weight == T) {
+    temp <- tabyl(df, !!var_name) %>%
+      filter(!(!!var_name %in% ignore_weight_responses))
     
     weighted_class <- temp %>%
       filter(n != max(n)) %>%
@@ -916,9 +925,8 @@ f_segmentor <- function(df, y, x, s, forced_sample, ignore_weight_responses = c(
     
     if (length(weighted_class) > 0) {
       df <- map_dfr(weighted_class, function(x) {
-        
         temp_n <- temp %>%
-          filter(!!var_sym == x) %>%
+          filter(!!var_name %in% x) %>%
           pull(n)
         
         df %>%
@@ -929,13 +937,8 @@ f_segmentor <- function(df, y, x, s, forced_sample, ignore_weight_responses = c(
     }
   }
   
-  df %>% 
-    select(!!var_name) %>%
-    group_by_all() %>% 
-    count() %>% 
-    as.data.frame() %>% 
-    print()
-
+  print(f_grouper(select(df, !!var_name)))
+  
   # ** fit a tree
   colnames_for_data <- df %>%
     select(-weight_col, - !!var_name) %>%
@@ -951,17 +954,128 @@ f_segmentor <- function(df, y, x, s, forced_sample, ignore_weight_responses = c(
                     method = "rpart",
                     parms = list(split = "information"),
                     trControl = train_control,
-                    control = rpart.control(minbucket = min_bucket_size),
+                    control = rpart.control(minsplit = min_split_size),
                     tuneLength = 10
   )
   
   # ** output the chart / message of failure
   if (nrow(tree_fit$finalModel$frame) == 1) {
-    print(glue::glue("The model predicts only a single class and cannot be graphed"))
+    print("The model predicts only a single class and cannot be graphed")
   } else {
-    return(tree_fit)
+    png(file.path(dir, paste0(file_nm, ifelse(with_weight == T, "_forced", "_organic"), ".png")),
+        height = 3000,
+        width = 6000,
+        res = 300)
+    
+    rpart.plot::rpart.plot(tree_fit$finalModel,
+                           main = paste0(file_nm, ifelse(with_weight == T, "_forced", "_organic")),
+                           type = 2,
+                           tweak = 1.1,
+                           space = 0.1,
+                           gap = 0.01)
+    dev.off()
+    graphics.off()
   }
 }
+
+f_segmentor <- function(df, y_string, dir, file_nm, ignore_weight_responses = c(), weight_col){
+  y_string <- ensym(y_string)
+  f_sub_segmentor(df, y_string, dir, file_nm, F, weight_col = weight_col)
+  f_sub_segmentor(df, y_string, dir, file_nm, T, ignore_weight_responses, weight_col = weight_col)
+}
+
+
+
+# f_segmentor <- function(df, y, x, s, forced_sample, ignore_weight_responses = c()){
+#   
+#   if (s %in% colnames(d_summ)){weight_col = d_summ["WEIGHT", s]}
+#   
+#   df <- df %>% 
+#     select(c(y, x, weight_col))
+#   
+#   # remove NA
+#   removed_df <- df %>%  
+#     filter_all(any_vars(is.na(.)))
+#   
+#   print(glue::glue("{nrow(removed_df)} rows removed during classification due to NAs"))
+#   
+#   df <- df %>% 
+#     tidyr::drop_na()
+#   
+#   # Capturing name of y variable
+#   var_name <- y %>% 
+#     rlang::sym()
+#   
+#   min_bucket_size <- 100
+#   
+#   train_control <- caret::trainControl(
+#     method = "repeatedcv",
+#     number = 10,
+#     repeats = 3
+#   )
+#   
+#   # ** create data for tree  
+#   df <- df %>%
+#     filter(!is.na(!!var_name), trimws(!!var_name) != "") %>% 
+#     mutate_if(is_character, as_factor) 
+#   
+#   if (forced_sample == T) {
+#     temp <- janitor::tabyl(df, !!var_name) %>%
+#       filter(!(!!var_name %in% ignore_weight_responses)) %>% 
+#       mutate_if(is.factor, as.character)
+#     
+#     weighted_class <- temp %>%
+#       filter(n != max(n)) %>%
+#       pull(!!var_name)
+#     
+#     if (length(weighted_class) > 0) {
+#       df <- map_dfr(weighted_class, function(x) {
+#         
+#         temp_n <- temp %>%
+#           filter(!!var_sym == x) %>%
+#           pull(n)
+#         
+#         df %>%
+#           filter(!!var_name %in% x) %>%
+#           sample_n(size = max(temp$n) - temp_n, replace = TRUE)
+#       }) %>%
+#         rbind(df)
+#     }
+#   }
+#   
+#   df %>% 
+#     select(!!var_name) %>%
+#     group_by_all() %>% 
+#     count() %>% 
+#     as.data.frame() %>% 
+#     print()
+# 
+#   # ** fit a tree
+#   colnames_for_data <- df %>%
+#     select(-weight_col, - !!var_name) %>%
+#     colnames() %>%
+#     paste0(collapse = "+")
+#   
+#   tree_formulae <- as.formula(paste(quo_name(var_name), "~", colnames_for_data)) 
+#   rm(colnames_for_data)
+#   
+#   tree_fit <- train(tree_formulae,
+#                     data = df,
+#                     weights = get(weight_col),
+#                     method = "rpart",
+#                     parms = list(split = "information"),
+#                     trControl = train_control,
+#                     control = rpart.control(minbucket = min_bucket_size),
+#                     tuneLength = 10
+#   )
+#   
+#   # ** output the chart / message of failure
+#   if (nrow(tree_fit$finalModel$frame) == 1) {
+#     print(glue::glue("The model predicts only a single class and cannot be graphed"))
+#   } else {
+#     return(tree_fit)
+#   }
+# }
 
 
 #___________________----
