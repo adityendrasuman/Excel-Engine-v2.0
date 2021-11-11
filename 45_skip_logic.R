@@ -11,6 +11,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
+load("dt_02.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -64,7 +65,7 @@ questions_regex <- map %>%
 
 for (q_regex in questions_regex) {
   
-  regex_q_mapping <- d_02 %>% 
+  regex_q_mapping <- dt_02 %>% 
     select(matches(q_regex)) %>% 
     colnames() %>% 
     as.data.frame() %>% 
@@ -207,7 +208,7 @@ for (q_no in questions) {
 
   multiple_q = T
   
-  apply_condn_on_data <- d_02 %>% 
+  apply_condn_on_data <- dt_02 %>% 
     mutate(
       xx_value = ifelse(is.na(eval(parse(text=condition_overall))), F, eval(parse(text=condition_overall))),
       xx_condition = ifelse(xx_value, "met", "un-met"),
@@ -350,8 +351,6 @@ rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
 
 # save environment in a session temp variable ----
 save.image(file=file.path(g_wd, "env.RData"))
-rm(d_01, d_01_A, d_01_B, d_01_C, d_01_D, d_01_Octa9)
-save.image(file=file.path(g_wd, "env_small.RData"))
 
 print(glue::glue("\n\nAll done!"))
 for(i in 1:3){

@@ -35,6 +35,7 @@ dt_02 %>%
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 

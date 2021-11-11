@@ -33,6 +33,7 @@ print(glue::glue("Imported data has {ncol(d_colmap)} columns and {nrow(d_colmap)
 #====================================================
 
 # Log of run ----
+glue::glue("\n") %>% f_log_string(g_file_log)
 glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
 glue::glue("\n") %>% f_log_string(g_file_log)
 
