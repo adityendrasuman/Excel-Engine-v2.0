@@ -90,7 +90,7 @@ k <- 0
 
 # For each such question number ...
 for (q_no in questions) {
-  
+
   # filter the skip logic table for rows that contain condition variable
   skip_filtered_for_q <- map %>% 
     filter(check_var == q_no)
