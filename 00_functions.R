@@ -941,7 +941,7 @@ f_sub_segmentor <- function(df,
   
   # ** fit a tree
   colnames_for_data <- df %>%
-    select(-weight_col, - !!var_name) %>%
+    select(-all_of(weight_col), - !!var_name) %>%
     colnames() %>%
     paste0(collapse = "+")
   
