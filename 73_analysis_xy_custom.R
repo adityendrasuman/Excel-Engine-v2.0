@@ -385,6 +385,8 @@ for (q_no in unique(data$X1)){
             filter(X1 == q[[2]]) %>%
             pull(X2)
           
+          if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
+          
           answer <- dt_02 %>% 
             f_answer_creator(q[[1]], q[[2]], q[[3]], q[[4]]) %>% 
             suppressWarnings() %>% 
