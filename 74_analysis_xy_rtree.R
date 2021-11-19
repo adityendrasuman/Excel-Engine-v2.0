@@ -31,10 +31,9 @@ glue::glue("===================== Running '74_analyse_xy_rtree.R' ==============
 glue::glue("This creates Regression Tree for y agianst x variables, with custom filters") %>% f_log_string(g_file_log)
 
 #====================================================
-question_creator <- function(data, i){
+question_creator <- function(card){
   
-  df <- data %>% 
-    filter(X1 == i)
+  df <- card
   
   # get summariser
   s <- df %>% 
@@ -75,7 +74,12 @@ question_creator <- function(data, i){
     filter(q_no == y) %>% 
     pull(condition)
   
-  condition <- ifelse(is_empty(condition), "T", glue::glue("({trimws(condition)})"))
+  # notes
+  notes <- df %>% 
+    filter(Notes != "" & !is.na(Notes)) %>% 
+    pull(Notes)
+  
+  condition <- ifelse(rlang::is_empty(condition), "T", glue::glue("({trimws(condition)})"))
   
   # for each condition ...
   if (num_conditions > 0){
@@ -153,40 +157,58 @@ question_creator <- function(data, i){
     }
   }
   
-  question <- list(s, y, condition, x, x_label, y_label)
+  question <- list(s, y, condition, x, x_label, y_label, notes)
   return(question)
 }
 
-if (args[2] == "all"){
-  data <- f_read_xl(g_file_path, namedRegion = "xy_rtree_all_temp", colNames = T, rowNames = F)
+if (args[2] == "section"){
+  data <- f_read_xl(g_file_path, namedRegion = "xy_custom_all_temp", colNames = T, rowNames = F)
+  section <- args[3]
+  row_start <- which(data$X1 == paste0("SECTION ", stringr::str_pad(section, 2, pad = "0"), ": "))
+  row_end <- which(data$X1 == paste0("SECTION ", stringr::str_pad(as.numeric(section) + 1, 2, pad = "0"), ": "))
+  if (length(row_end) == 0) {row_end <- nrow(data) + 1}
+  
+  data <- data %>% 
+    slice(row_start:(row_end - 1))
+  
+} else if (args[2] == "all"){
+  data <- f_read_xl(g_file_path, namedRegion = "xy_custom_all_temp", colNames = T, rowNames = F)
 } else {
   json_str <- gsub("~", '"', args[2]) 
   data <- jsonlite::fromJSON(json_str) %>% 
-    mutate_all(na_if,"")
+    dplyr::mutate_all(dplyr::na_if,"")
   colnames(data) <- gsub(" ", ".", colnames(data)) 
 }
 
-data <- data %>% 
-  dplyr::filter(!grepl("^ANALYSIS ",X1)) %>% 
+data <- data %>%
+  mutate(Var.type = case_when(
+    substr(X1, 1, 7) == "SECTION" ~ paste(X1, Var.type),
+    T ~ Var.type)) %>%
+  mutate(X1 = case_when(
+    substr(X1, 1, 7) == "SECTION" ~ lead(X1),
+    T ~ X1)) %>% 
   mutate(X1 = as.numeric(X1)) %>% 
   filter_all(any_vars(!is.na(.))) %>% 
   mutate(
     condition_sign = case_when(
       Var.type == "FILTER" ~ lead(Description)),
+    
     condition_value = case_when(
-      Var.type == "FILTER" ~ lead(X6))
-  ) %>% 
+      Var.type == "FILTER" ~ lead(X6)),
+    
+    show_condition_sign = case_when(
+      Var.type == "SHOW" ~ lead(Description)),
+    
+    show_condition_value = case_when(
+      Var.type == "SHOW" ~ lead(X6))) %>%
+  
   filter(!is.na(Var.type)) %>% 
   mutate(sl = row_number()) %>% 
   mutate(X1 = as.numeric(X1)) %>% 
-  select(-RUN, -X6) %>% 
+  select(-X6) %>% 
   select(sl, everything())
 
 data$X1 <- cumsum(!is.na(data$X1))
-
-# Remove blank X variables
-data <- data %>% 
-  filter(!Var.type %in% c("[X]", "FILTER") | !is.na(Variable))
 
 # Remove analysis cards that have blank Y variable
 to_delete <- data %>% 
@@ -198,53 +220,88 @@ if (length(to_delete) > 0) {
     filter(X1 != to_delete)
 }
 
-graph <- list()
+# Remove blank X AND FILTER variables
+data <- data %>% 
+  filter(!(Var.type %in% c("[X]", "FILTER") & (is.na(Variable))))
 
-if (args[2] == "all") {
-  
-  pb <- txtProgressBar(min = 0, max = max(data$X1), style = 3, width = 40)
-  
-  for (q_no in unique(data$X1)){
-    
-    q <- data %>% 
-      question_creator(q_no)
-    
-    answer_actual_sample <- dt_02 %>% 
-      f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]], 
-                  forced_sample = F, ignore_weight_responses = c())
+pb <- txtProgressBar(min = min(data$X1), max = max(max(data$X1), min(data$X1) + 1), style = 3, width = 40)
+card_num <- 0
 
-    answer_forced_sample <- dt_02 %>% 
-      f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]],
-                  forced_sample = T, ignore_weight_responses = c())
-
-    setTxtProgressBar(pb, q_no)
-  }  
-    
-} else {
+for (q_no in unique(data$X1)){
   
-  q_no <- data %>% 
+  each_card <- data %>% 
+    filter(X1 == q_no)
+  
+  section_name <- each_card %>% 
     slice(1) %>% 
-    pull(X1)
+    pull(Var.type)
   
-  q <- data %>% 
-    question_creator(q_no)
+  is_section = ifelse(substr(section_name,1,7) == "SECTION", T, F)
   
-  answer_forced_sample <- dt_02 %>% 
-    f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]],
-                forced_sample = T, ignore_weight_responses = c())
-  
-  answer_actual_sample <- dt_02 %>% 
-    f_segmentor(y = q[[2]], x = q[[4]], s = q[[1]], y_desc = q[[5]], x_desc = q[[6]], 
-                forced_sample = F, ignore_weight_responses = c())
-  
+  if (is_section){
+    
+    graph[[q_no]] <- section_name %>%
+      f_graph_section()
+    
+  } else {
+    
+    card_num <- card_num + 1
+    
+    xxx <- tryCatch(
+      {
+        y_condition <- "T"
+        
+        each_card <- each_card %>% 
+          select(-show_condition_sign, -show_condition_value)
+        
+        # For each card create list of questions 
+        q <- each_card %>% 
+            question_creator()
+        
+        # For each question, create answers and rbind them
+        answer <- data.frame(matrix(ncol=9, nrow=0))
+        colnames(answer) <- c("group", "response", "N", "value", "value_se", "value_low", "value_upp", "pvalue", "sgnf")
+        
+        y_label <- d_colmap %>%
+          filter(X1 == q[[2]]) %>%
+          pull(X2)
+          
+        if (length(q[[7]]) != 0) {y_label <- paste0(q[[7]], " | ", y_label)}
+        if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
+        
+        answer_organic <- dt_02 %>% 
+          
+          
+        answer_forced <- dt_02 %>% 
+          
+        graph[[q_no]] <- answer %>% 
+          f_graph_2(x_all = q[[4]],
+                    y = q[[2]],
+                    y_condition = y_condition, 
+                    condition = q[[3]], 
+                    numeric_y = numeric_y, 
+                    colmap = d_colmap,
+                    cluster_chart = cluster_chart)
+        
+        setTxtProgressBar(pb, q_no)
+      },
+      
+      error = function(e){
+        (glue::glue("\n !ERROR: At card number {card_num} of the selected card set")) %>% 
+          f_log_string(g_file_log) 
+        
+        card_num %>% 
+          f_graph_error1() %>% 
+          return()
+      }
+    ) # END OF OUTER TRY CATCH
+    if (class(xxx)[1] == "gg"){graph[[q_no]] <- xxx}  
+    
+  }
 }
-  
-
 
 graph %>% 
   f_plotter(g_excel_frontend_dir)
-
-
 
 
 #====================================================
