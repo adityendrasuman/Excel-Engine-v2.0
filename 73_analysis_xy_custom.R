@@ -74,6 +74,11 @@ question_creator <- function(card){
     filter(q_no == y) %>% 
     pull(condition)
   
+  # notes
+  notes <- df %>% 
+    filter(Notes != "" & !is.na(Notes)) %>% 
+    pull(Notes)
+  
   condition <- ifelse(rlang::is_empty(condition), "T", glue::glue("({trimws(condition)})"))
     
   # for each condition ...
@@ -152,7 +157,7 @@ question_creator <- function(card){
     }
   }
   
-  question <- list(s, y, condition, x, x_label, y_label)
+  question <- list(s, y, condition, x, x_label, y_label, notes)
   return(question)
 }
 
@@ -384,6 +389,8 @@ for (q_no in unique(data$X1)){
           y_label <- d_colmap %>%
             filter(X1 == q[[2]]) %>%
             pull(X2)
+          
+          y_label <- paste0(q[[7]], " | ", y_label)
           
           if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
           
