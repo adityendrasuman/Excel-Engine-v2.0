@@ -173,6 +173,7 @@ if (args[2] == "section"){
   
 } else if (args[2] == "all"){
   data <- f_read_xl(g_file_path, namedRegion = "xy_custom_all_temp", colNames = T, rowNames = F)
+
 } else {
   json_str <- gsub("~", '"', args[2]) 
   data <- jsonlite::fromJSON(json_str) %>% 
@@ -224,6 +225,7 @@ if (length(to_delete) > 0) {
 data <- data %>% 
   filter(!(Var.type %in% c("[X]", "FILTER") & (is.na(Variable))))
 
+graph <- list()
 pb <- txtProgressBar(min = min(data$X1), max = max(max(data$X1), min(data$X1) + 1), style = 3, width = 40)
 card_num <- 0
 
@@ -240,7 +242,7 @@ for (q_no in unique(data$X1)){
   
   if (is_section){
     
-    graph[[q_no]] <- section_name %>%
+    graph[[length(graph) + 1]] <- section_name %>%
       f_graph_section()
     
   } else {
@@ -249,8 +251,6 @@ for (q_no in unique(data$X1)){
     
     xxx <- tryCatch(
       {
-        y_condition <- "T"
-        
         each_card <- each_card %>% 
           select(-show_condition_sign, -show_condition_value)
         
@@ -259,29 +259,19 @@ for (q_no in unique(data$X1)){
             question_creator()
         
         # For each question, create answers and rbind them
-        answer <- data.frame(matrix(ncol=9, nrow=0))
-        colnames(answer) <- c("group", "response", "N", "value", "value_se", "value_low", "value_upp", "pvalue", "sgnf")
-        
-        y_label <- d_colmap %>%
-          filter(X1 == q[[2]]) %>%
-          pull(X2)
+        # y_label <- d_colmap %>%
+        #   filter(X1 == q[[2]]) %>%
+        #   pull(X2)
+        y_label <- character(0)
           
         if (length(q[[7]]) != 0) {y_label <- paste0(q[[7]], " | ", y_label)}
         if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
         
-        answer_organic <- dt_02 %>% 
-          
-          
-        answer_forced <- dt_02 %>% 
-          
-        graph[[q_no]] <- answer %>% 
-          f_graph_2(x_all = q[[4]],
-                    y = q[[2]],
-                    y_condition = y_condition, 
-                    condition = q[[3]], 
-                    numeric_y = numeric_y, 
-                    colmap = d_colmap,
-                    cluster_chart = cluster_chart)
+        graph[[length(graph) + 1]] <- dt_02 %>%
+          f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label)
+        
+        graph[[length(graph) + 1]] <- dt_02 %>%
+          f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label, with_weight = T)
         
         setTxtProgressBar(pb, q_no)
       },
@@ -295,7 +285,7 @@ for (q_no in unique(data$X1)){
           return()
       }
     ) # END OF OUTER TRY CATCH
-    if (class(xxx)[1] == "gg"){graph[[q_no]] <- xxx}  
+    if (class(xxx)[1] == "gg"){graph[[length(graph) + 1]] <- xxx}  
     
   }
 }
