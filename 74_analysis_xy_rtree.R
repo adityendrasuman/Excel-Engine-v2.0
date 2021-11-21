@@ -19,7 +19,7 @@ source(file.path(g_excel_backend_temp_nospace_dir_rf, "00_functions.R"))
 
 # load libraries ----
 error = f_libraries(
-  necessary.std = c("dplyr", "rlang", "stats", "ggplot2", "scales", "forcats", "jsonlite", "stringr"),
+  necessary.std = c("dplyr", "rlang", "stats", "ggplot2", "scales", "forcats", "jsonlite", "stringr", "lattice"),
   necessary.github = c()
 )
 glue::glue("RUNNING R SERVER ...") %>% print()
@@ -162,7 +162,7 @@ question_creator <- function(card){
 }
 
 if (args[2] == "section"){
-  data <- f_read_xl(g_file_path, namedRegion = "xy_custom_all_temp", colNames = T, rowNames = F)
+  data <- f_read_xl(g_file_path, namedRegion = "xy_rtree_all_temp", colNames = T, rowNames = F)
   section <- args[3]
   row_start <- which(data$X1 == paste0("SECTION ", stringr::str_pad(section, 2, pad = "0"), ": "))
   row_end <- which(data$X1 == paste0("SECTION ", stringr::str_pad(as.numeric(section) + 1, 2, pad = "0"), ": "))
@@ -172,7 +172,7 @@ if (args[2] == "section"){
     slice(row_start:(row_end - 1))
   
 } else if (args[2] == "all"){
-  data <- f_read_xl(g_file_path, namedRegion = "xy_custom_all_temp", colNames = T, rowNames = F)
+  data <- f_read_xl(g_file_path, namedRegion = "xy_rtree_all_temp", colNames = T, rowNames = F)
 
 } else {
   json_str <- gsub("~", '"', args[2]) 
@@ -188,7 +188,8 @@ data <- data %>%
   mutate(X1 = case_when(
     substr(X1, 1, 7) == "SECTION" ~ lead(X1),
     T ~ X1)) %>% 
-  mutate(X1 = as.numeric(X1)) %>% 
+  mutate(X1 = as.numeric(X1)) %>%
+  suppressWarnings() %>% 
   filter_all(any_vars(!is.na(.))) %>% 
   mutate(
     condition_sign = case_when(
@@ -225,11 +226,14 @@ if (length(to_delete) > 0) {
 data <- data %>% 
   filter(!(Var.type %in% c("[X]", "FILTER") & (is.na(Variable))))
 
-graph <- list()
 pb <- txtProgressBar(min = min(data$X1), max = max(max(data$X1), min(data$X1) + 1), style = 3, width = 40)
 card_num <- 0
+graph <- list()
 
 for (q_no in unique(data$X1)){
+  
+  glue::glue("\n") %>% print()
+  glue::glue("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++") %>% print()
   
   each_card <- data %>% 
     filter(X1 == q_no)
@@ -264,14 +268,19 @@ for (q_no in unique(data$X1)){
         #   pull(X2)
         y_label <- character(0)
           
-        if (length(q[[7]]) != 0) {y_label <- paste0(q[[7]], " | ", y_label)}
+        if (length(q[[7]]) != 0) {y_label <- paste0(q[[7]], 
+                                                    ifelse(length(y_label) > 0, 
+                                                           paste0(" | ", y_label), 
+                                                           ""))}
         if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
         
-        graph[[length(graph) + 1]] <- dt_02 %>%
-          f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label)
+        dt_02 %>%
+          f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label,
+                      min_samp = args[[3]])
         
-        graph[[length(graph) + 1]] <- dt_02 %>%
-          f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label, with_weight = T)
+        dt_02 %>%
+          f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label, 
+                      min_samp = args[[3]], with_weight = T)
         
         setTxtProgressBar(pb, q_no)
       },
@@ -289,9 +298,6 @@ for (q_no in unique(data$X1)){
     
   }
 }
-
-graph %>% 
-  f_plotter(g_excel_frontend_dir)
 
 
 #====================================================

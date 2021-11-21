@@ -879,6 +879,7 @@ f_segmentor <- function(df_in,
                         filter_in,
                         x_all_in,
                         file_nm,
+                        min_samp,
                         ignore_weight_responses = c(),
                         with_weight = F){
   
@@ -900,7 +901,7 @@ f_segmentor <- function(df_in,
   
   for (x in x_all_in){
     x_values <- df_1 %>% 
-      select(x) %>% 
+      select(all_of(x)) %>% 
       unique() %>% 
       filter(!is.na(!!rlang::sym(x))) %>% 
       nrow()
@@ -912,7 +913,7 @@ f_segmentor <- function(df_in,
         df_1[[x]] <- ifelse(is.na(df_1[[x]]), "NA", df_1[[x]])
       }
       if (class(df_1[[x]]) == "character"){
-        df_1[[x]] <- forcats::as_factor(df_1[[x]])
+        df_1[[x]] <- forcats::as_factor(df_1[[x]], only_labelled = TRUE)
       }
       
     } else {
@@ -924,11 +925,10 @@ f_segmentor <- function(df_in,
   df <- df_1 %>% 
     select(all_of(y), all_of(x_all), all_of(weight_col)) %>% 
     tidyr::drop_na()
-  glue::glue("{nrow(df_1) - nrow(df)} out of {nrow(df_1)} rows removed due to NA values in either of the variables") %>% print()
-  glue::glue("{nrow(df)} rows remaining") %>% print()
-  
+  glue::glue("{nrow(df_1) - nrow(df)} rows removed due to NA values") %>% print()
+
   # TREE ALGO
-  min_split_size <- 30
+  min_split_size <- as.numeric(min_samp)
   
   train_control <- caret::trainControl(
     method = "repeatedcv",
@@ -984,10 +984,9 @@ f_segmentor <- function(df_in,
   
   # ** output the chart / message of failure
   if (nrow(tree_fit$finalModel$frame) == 1) {
-    glue::glue("The model predicts only a single class and cannot be graphed")
+    glue::glue("The model predicts only a single class and cannot be graphed") %>% print()
     
   } else {
-    
     nm <- paste0(file_nm, ifelse(with_weight == T, " - FORCED", " - ORGANIC")) 
     nm <- gsub("\\:", " \\- ", nm)
     
