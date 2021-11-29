@@ -891,8 +891,7 @@ f_segmentor <- function(df_in,
   
   # Apply user provided filter + skip logic filter on Y
   df_1 <- df_in %>% 
-    filter(ifelse(is.na(eval(parse(text=filter_in))), F, eval(parse(text=filter_in)))) %>% 
-    mutate_if(is.character, as_factor)
+    filter(ifelse(is.na(eval(parse(text=filter_in))), F, eval(parse(text=filter_in))))
   
   glue::glue("{nrow(df_1)} rows remaining after skip-logic and user filters") %>% print()
   
@@ -913,7 +912,7 @@ f_segmentor <- function(df_in,
         df_1[[x]] <- ifelse(is.na(df_1[[x]]), "NA", df_1[[x]])
       }
       if (class(df_1[[x]]) == "character"){
-        df_1[[x]] <- forcats::as_factor(df_1[[x]], only_labelled = TRUE)
+        df_1[[x]] <- forcats::as_factor(df_1[[x]])
       }
       
     } else {
