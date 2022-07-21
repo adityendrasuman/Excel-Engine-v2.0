@@ -160,8 +160,8 @@ for (q_no in questions) {
         } else {
           
           # if a single response ...
-          if (sign == "not in") {sign == "!="}
-          if (sign == "in") {sign == "=="}
+          if (sign == "not in") {sign = "!="}
+          if (sign == "in") {sign = "=="}
           if (response_is_string > 0){
             
             # ... in string format, create "a"
@@ -180,9 +180,9 @@ for (q_no in questions) {
       next_condition <- skip_filtered_for_block[i, "next_condition"] %>% 
         stringr::str_trim()
       
-      if (is.na(next_condition)) {next_condition <- ""}
+      if (is.na(next_condition)) {next_condition = ""}
       
-      # apend to previous condition and make it redy to append the condition string using the "next condition" string
+      # apend to previous condition and make it ready to append the condition string using the "next condition" string
       if (!is.na(var)){
         if (sign == "not in") {
           condition <- glue::glue("{condition} !({var} %in% {response_string}) {next_condition}")
