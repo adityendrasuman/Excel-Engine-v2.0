@@ -78,6 +78,9 @@ for (q_regex in questions_regex) {
 # Add question number to the skip logic map
 map <- map %>% 
   left_join(regex_q_mapping, by =c("check_var_regex"))
+
+map %>%
+  write.table(file = file.path("skip_logic_error_log.csv"), sep=",", col.names = T, row.names = F)
   
 # Figure out all the question numbers strings to apply the check on
 questions <- map %>% 
@@ -307,9 +310,15 @@ if (nrow(d_skip_newcol) > 0){
       
       condn <- d_skip %>% 
         filter(q_no %in% x) %>% 
-        pull(condition) %>% 
-        paste0("(", ., ")")
-        
+        pull(condition)
+      
+      if (length(condn)==0){
+        condn = '("T")'
+      } else {
+        condn <- condn %>% 
+          paste0("(", ., ")")
+      }
+
       condition <- condition %>% 
         stringr::str_replace_all(x, condn)
     }
