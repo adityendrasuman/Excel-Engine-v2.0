@@ -227,7 +227,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
         
         summary <- data %>%
           mutate(value_2 = eval(parse(text=condition_2))) %>%
-          filter(value_2 == T) %>%
+          filter(as.logical(value_2) == T) %>%
           summariser(!!y_sym)
         
       } else if (length(x_all) > 0){
@@ -238,7 +238,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
         summary <- data %>%
           f_combine_columns(group_var_col, x_all_regex, "matches") %>%  
           mutate(value_2 = eval(parse(text=condition_2))) %>% 
-          filter(value_2 == T) %>%
+          filter(as.logical(value_2) == T) %>%
           summariser(!!y_sym, group_var_col)
       }
     
@@ -259,7 +259,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
         summary <- data %>%
           f_combine_columns(group_var_col, x_all_regex, "matches") %>%  
           mutate(value_2 = eval(parse(text=condition_2))) %>% 
-          filter(value_2 == T) %>%
+          filter(as.logical(value_2) == T) %>%
           summariser(!!y_sym, group_var_col) %>% 
           select(-group, group = response)
       }
