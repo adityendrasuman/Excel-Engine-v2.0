@@ -80,7 +80,7 @@ map <- map %>%
   left_join(regex_q_mapping, by =c("check_var_regex"))
 
 map %>%
-  write.table(file = file.path("skip_logic_error_log.csv"), sep=",", col.names = T, row.names = F)
+  write.table(file = file.path("skip_logic_map.csv"), sep=",", col.names = T, row.names = F)
   
 # Figure out all the question numbers strings to apply the check on
 questions <- map %>% 
