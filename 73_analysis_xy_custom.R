@@ -390,9 +390,9 @@ for (q_no in unique(data$X1)){
             filter(X1 == q[[2]]) %>%
             pull(X2)
           
-          y_label <- paste0(q[[7]], " | ", y_label)
+          y_label2 <- paste0(q[[7]], " | ", y_label)
           
-          if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
+          if(length(y_label) == 0) {y_label2 = "Label could not be loaded - please re-run colnames upload"}
           
           if (single_q == F & length(q[[4]]) == 0){
             dt_02 <- dt_02 %>%
@@ -405,17 +405,23 @@ for (q_no in unique(data$X1)){
           answer <- dt_02 %>% 
             f_answer_creator(s = q[[1]], y = q[[2]], condition_2 = q[[3]], q[[4]]) %>%
             suppressWarnings() %>% 
-            mutate(question = y_label) %>% 
+            mutate(question = y_label2) %>% 
             rbind(answer)
           
-          if(nrow(answer) == 0) {y_label = "The indicated y column(s) has no response or all responses are being filtered"}
+          if(nrow(answer) == 0) {y_label2 = "The indicated y column(s) has no response or all responses are being filtered"}
           
           dt_02 %>% 
             select_if(!names(.) %in% c('All'))
           
         }
         
+        folder_name  = file.path(g_excel_frontend_dir, "Data Tables")
+        dir.create(folder_name, showWarnings = FALSE)
         
+        answer %>% 
+          write.csv(file.path(folder_name, paste0(gsub("_{2,}","_", gsub("\\W","_", y_label)),
+                                                  format(Sys.time(), "_%Y%m%d_%H%M%S"), 
+                                                  ".csv")))
         
         graph[[q_no]] <- answer %>% 
           f_graph_2(x_all = q[[4]],
