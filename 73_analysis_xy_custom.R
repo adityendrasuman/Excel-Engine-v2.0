@@ -419,7 +419,7 @@ for (q_no in unique(data$X1)){
         dir.create(folder_name, showWarnings = FALSE)
         
         answer %>% 
-          write.csv(file.path(folder_name, paste0(format(Sys.time(), "%Y%m%d_%H%M%S"),
+          write.csv(file.path(folder_name, paste0(format(Sys.time(), "%y%m%d_%H%M%S"),
                                                   "_",
                                                   gsub("_{2,}","_", gsub("\\W","_", y_label)), 
                                                   ".csv")))
