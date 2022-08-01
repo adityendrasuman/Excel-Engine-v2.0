@@ -418,10 +418,10 @@ for (q_no in unique(data$X1)){
         folder_name  = file.path(g_excel_frontend_dir, "Data Tables")
         dir.create(folder_name, showWarnings = FALSE)
         
-        answer %>% 
-          write.csv(file.path(folder_name, paste0(format(Sys.time(), "%y%m%d_%H%M%S"),
+         answer %>%
+          write.csv(file.path(folder_name, paste0(substr(paste0(format(Sys.time(), "%y%m%d_%H%M%S"),
                                                   "_",
-                                                  gsub("_{2,}","_", gsub("\\W","_", y_label)), 
+                                                  gsub("_{2,}","_", gsub("\\W","_", y_label))),1,40),
                                                   ".csv")))
         
         graph[[q_no]] <- answer %>% 
