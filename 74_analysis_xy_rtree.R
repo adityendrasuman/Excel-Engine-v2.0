@@ -79,7 +79,11 @@ question_creator <- function(card){
     filter(Notes != "" & !is.na(Notes)) %>% 
     pull(Notes)
   
-  condition <- ifelse(rlang::is_empty(condition), "T", glue::glue("({trimws(condition)})"))
+  if (rlang::is_empty(condition)){
+    condition = "T"
+  } else {
+    condition = glue::glue("({trimws(condition)})")
+  }
   
   # for each condition ...
   if (num_conditions > 0){

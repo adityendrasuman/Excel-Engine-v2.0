@@ -7,6 +7,7 @@ start_time <- Sys.time()
 
 # capture variable coming from vba ----
 args <- commandArgs(trailingOnly=T)
+args <- c("C:|Users|User|Dropbox (Personal)|Family Room|Swades 2.0|interface history|", "[{~X1~:~13~,~Run~:~~,~Var type~:~[Y]~,~Variable~:~z_tapwater~,~Description~:~Has Tap Water Or Not~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~All matching Y~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~Stack chart~},{~X1~:~~,~Run~:~~,~Var type~:~[X]~,~Variable~:~sec_i_2_1~,~Description~:~2.1 Type Of Village~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~SUMMARISER~,~Variable~:~S1~,~Description~:~ (Created)~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~}]")
 
 # set working director ----
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
@@ -79,7 +80,11 @@ question_creator <- function(card){
     filter(Notes != "" & !is.na(Notes)) %>% 
     pull(Notes)
   
-  condition <- ifelse(rlang::is_empty(condition), "T", glue::glue("({trimws(condition)})"))
+  if (rlang::is_empty(condition)){
+    condition = "T"
+  } else {
+    condition = glue::glue("({trimws(condition)})")
+  }
     
   # for each condition ...
   if (num_conditions > 0){

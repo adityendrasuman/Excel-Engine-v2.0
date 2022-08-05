@@ -91,7 +91,11 @@ for (n_y in 1:length(all_y)){
     filter(q_no == y) %>% 
     pull(condition)
   
-  filter_y <- ifelse(rlang::is_empty(filter_y), "T", glue::glue("({trimws(filter_y)})"))
+  if (rlang::is_empty(filter_y)){
+    filter_y = "T"
+  } else {
+    filter_y = glue::glue("({trimws(filter_y)})")
+  }
   
     x_sym = character(0)
     
