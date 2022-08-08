@@ -100,11 +100,7 @@ question_creator <- function(card){
   # for each condition ...
   if (num_conditions > 0){
     
-    if (condition == "T") {
-      condition <- ""
-    } else {
-      condition <- glue::glue("{condition} & ")
-    }
+    condition_2 <- glue::glue("{condition_2} & ")
     
     for (i in 1:num_conditions){
       

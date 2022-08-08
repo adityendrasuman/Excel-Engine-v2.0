@@ -7,6 +7,7 @@ start_time <- Sys.time()
 
 # capture variable coming from vba ----
 args <- commandArgs(trailingOnly=T)
+args <- c("C:|Users|User|Downloads|Survey Analysis Tool Sharing_08082022|interface history|", "[{~X1~:~1~,~Run~:~~,~Var type~:~[Y]~,~Variable~:~z_actual_wage~,~Description~:~Wage Without Overtime And Bonus Payment~,~X6~:~~,~Notes~:~Comparison of avg. wage level by industry for skilled workers~,~Flag~:~~,~Flag_For~:~All matching Y~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~Stack chart~},{~X1~:~~,~Run~:~~,~Var type~:~[X]~,~Variable~:~z_industry~,~Description~:~Industry~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~FILTER~,~Variable~:~a1_3_1~,~Description~:~Skill Level~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~in~,~X6~:~Skilled~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~SUMMARISER~,~Variable~:~S1~,~Description~:~ (Created)~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~}]")
 
 # set working director ----
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
@@ -98,6 +99,8 @@ question_creator <- function(card){
   
   # for each user condition ...
   if (num_conditions > 0){
+    
+    condition_2 <- glue::glue("{condition_2} & ")
     
     for (i in 1:num_conditions){
       
