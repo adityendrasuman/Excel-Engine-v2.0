@@ -93,6 +93,7 @@ question_creator <- function(card){
         condition_2 = condition[i]
       }
     }
+    condition_2 = gsub('"T"', 'T', condition_2)
   }
   
   

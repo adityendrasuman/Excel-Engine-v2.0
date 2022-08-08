@@ -7,6 +7,8 @@ start_time <- Sys.time()
 
 # capture variable coming from vba ----
 args <- commandArgs(trailingOnly=T)
+args <- c("C:|Users|User|Downloads|Survey Analysis Tool Sharing_08082022|interface history|", "[{~X1~:~64~,~Run~:~~,~Var type~:~[Y]~,~Variable~:~z_comb_G7_3[a-e]~,~Description~:~All Column Names That Match --Z_Comb_G7_3[A-E]--.~,~X6~:~~,~Notes~:~% of workers agreeing with various benefits of being a union member across all industries~,~Flag~:~?~,~Flag_For~:~All matching Y~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~Stack chart~},{~X1~:~~,~Run~:~~,~Var type~:~SHOW~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~in~,~X6~:~True | Mentioned | Yes | Agree~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~SUMMARISER~,~Variable~:~S1~,~Description~:~ (Created)~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~},{~X1~:~~,~Run~:~~,~Var type~:~~,~Variable~:~~,~Description~:~~,~X6~:~~,~Notes~:~~,~Flag~:~~,~Flag_For~:~~}]")
+
 
 # set working director ----
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
@@ -93,6 +95,7 @@ question_creator <- function(card){
         condition_2 = condition[i]
       }
     }
+    condition_2 = gsub('"T"', 'T', condition_2)
   }
   
   # for each user condition ...

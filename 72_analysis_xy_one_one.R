@@ -79,6 +79,7 @@ question_creator <- function(query, i){
         condition_2 = condition[i]
       }
     }
+    condition_2 = gsub('"T"', 'T', condition_2)
   }
   
   question <- list(s, y, condition_2, x, x_label, y_label)

@@ -105,6 +105,7 @@ for (n_y in 1:length(all_y)){
         filter_y_2 = filter_y[i]
       }
     }
+    filter_y_2 = gsub('"T"', 'T', filter_y_2)
   }
   
   
