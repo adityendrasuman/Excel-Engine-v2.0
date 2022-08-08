@@ -65,13 +65,23 @@ question_creator <- function(query, i){
     filter(q_no == y) %>% 
     pull(condition)
   
+  # fix skip logic filter and convert in one line
   if (rlang::is_empty(condition)){
-    condition = "T"
+    condition_2 = ("T")
   } else {
     condition = glue::glue("({trimws(condition)})")
+    condition_2 = ""
+    
+    for (i in 1:length(condition)){
+      if (condition_2 != ""){
+        condition_2 = glue::glue("{condition_2} & {condition[i]}")
+      } else {
+        condition_2 = condition[i]
+      }
+    }
   }
   
-  question <- list(s, y, condition, x, x_label, y_label)
+  question <- list(s, y, condition_2, x, x_label, y_label)
   return(question)
 }
 

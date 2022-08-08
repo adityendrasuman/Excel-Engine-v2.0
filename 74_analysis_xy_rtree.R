@@ -79,11 +79,22 @@ question_creator <- function(card){
     filter(Notes != "" & !is.na(Notes)) %>% 
     pull(Notes)
   
+  # fix skip logic filter and convert in one line
   if (rlang::is_empty(condition)){
-    condition = "T"
+    condition_2 = ("T")
   } else {
     condition = glue::glue("({trimws(condition)})")
+    condition_2 = ""
+    
+    for (i in 1:length(condition)){
+      if (condition_2 != ""){
+        condition_2 = glue::glue("{condition_2} & {condition[i]}")
+      } else {
+        condition_2 = condition[i]
+      }
+    }
   }
+  
   
   # for each condition ...
   if (num_conditions > 0){
@@ -152,16 +163,16 @@ question_creator <- function(card){
       next_condn <- ifelse(i == num_conditions, "", " & ")
       
       if (sign == "not in") {
-        condition <- glue::glue("{condition} !({var} %in% {response_string}){next_condn}")
+        condition_2 <- glue::glue("{condition_2} !({var} %in% {response_string}){next_condn}")
       } else if(sign == "in") {
-        condition <- glue::glue("{condition} {var} %in% {response_string}{next_condn}")
+        condition_2 <- glue::glue("{condition_2} {var} %in% {response_string}{next_condn}")
       } else {
-        condition <- glue::glue("{condition} {var} {sign} {response_string}{next_condn}")
+        condition_2 <- glue::glue("{condition_2} {var} {sign} {response_string}{next_condn}")
       }
     }
   }
   
-  question <- list(s, y, condition, x, x_label, y_label, notes)
+  question <- list(s, y, condition_2, x, x_label, y_label, notes)
   return(question)
 }
 

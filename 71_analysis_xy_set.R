@@ -91,22 +91,33 @@ for (n_y in 1:length(all_y)){
     filter(q_no == y) %>% 
     pull(condition)
   
+  # fix skip logic filter and convert in one line
   if (rlang::is_empty(filter_y)){
-    filter_y = "T"
+    filter_y_2 = ("T")
   } else {
     filter_y = glue::glue("({trimws(filter_y)})")
+    filter_y_2 = ""
+    
+    for (i in 1:length(filter_y)){
+      if (filter_y_2 != ""){
+        filter_y_2 = glue::glue("{filter_y_2} & {filter_y[i]}")
+      } else {
+        filter_y_2 = filter_y[i]
+      }
+    }
   }
+  
   
     x_sym = character(0)
     
     x_label = "Overall"
     
     answer <- dt_02 %>% 
-      f_answer_creator(s, y_sym, filter_y, x_sym) %>% 
+      f_answer_creator(s, y_sym, filter_y_2, x_sym) %>% 
       suppressWarnings() 
     
     graph[[length(graph) + 1]] <- answer %>% 
-      f_graph_1(x_sym, x_label, y_label, filter_y, numeric_y)
+      f_graph_1(x_sym, x_label, y_label, filter_y_2, numeric_y)
     
     i = i + 1
     setTxtProgressBar(pb, i)
@@ -117,11 +128,11 @@ for (n_y in 1:length(all_y)){
     x_label = desc_x[[n_x]]
       
     answer <- dt_02 %>% 
-      f_answer_creator(s, y_sym, filter_y, x_sym) %>% 
+      f_answer_creator(s, y_sym, filter_y_2, x_sym) %>% 
       suppressWarnings() 
     
     graph[[length(graph) + 1]] <- answer %>% 
-      f_graph_1(x_sym, x_label, y_label, filter_y, numeric_y)
+      f_graph_1(x_sym, x_label, y_label, filter_y_2, numeric_y)
     
     i = i + 1
     setTxtProgressBar(pb, i)
