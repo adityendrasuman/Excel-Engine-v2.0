@@ -309,7 +309,7 @@ for (q_no in unique(data$X1)){
 
 a <- tryCatch(
   {
-    shell.exec(file.path(g_excel_frontend_dir, "04. CART TREES", paste0(y_label, " - ORGANIC.png")))
+    shell.exec(file.path(g_excel_frontend_dir, "05. CART TREES", paste0(y_label, " - ORGANIC.png")))
   },
   
   error = function(e1){
@@ -319,7 +319,7 @@ a <- tryCatch(
     
     b <- tryCatch(
       {
-        shell.exec(file.path(g_excel_frontend_dir, "04. CART TREES", paste0(y_label, " - FORCED.png")))    
+        shell.exec(file.path(g_excel_frontend_dir, "05. CART TREES", paste0(y_label, " - FORCED.png")))    
       },
       
       error = function(e2){
