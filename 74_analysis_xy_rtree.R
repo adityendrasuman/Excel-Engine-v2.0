@@ -307,6 +307,33 @@ for (q_no in unique(data$X1)){
   }
 }
 
+a <- tryCatch(
+  {
+    shell.exec(file.path(g_excel_frontend_dir, "04. CART TREES", paste0(y_label, " - ORGANIC.png")))
+  },
+  
+  error = function(e1){
+    print("ORGANIC file could not be created")
+    print(e1)
+    print("Opening FORCED FILE")
+    
+    b <- tryCatch(
+      {
+        shell.exec(file.path(g_excel_frontend_dir, "04. CART TREES", paste0(y_label, " - FORCED.png")))    
+      },
+      
+      error = function(e2){
+        print("FORCED file could not be created")
+        print(e2)
+        Sys.sleep(3)
+      }
+    )
+    
+  }
+)
+
+
+
 
 #====================================================
 

@@ -426,7 +426,7 @@ for (q_no in unique(data$X1)){
           
         }
         
-        folder_name  = file.path(g_excel_frontend_dir, "Data Tables")
+        folder_name  = file.path(g_excel_frontend_dir, "04. Data Tables")
         dir.create(folder_name, showWarnings = FALSE)
         
          answer %>%
@@ -462,7 +462,7 @@ for (q_no in unique(data$X1)){
 }
 
 graph %>% 
-  f_plotter(g_excel_frontend_dir)
+  f_plotter(file.path(g_excel_frontend_dir, "03. Analysis Plots"))
 
 #====================================================
 

@@ -137,7 +137,7 @@ if (args[2] == "all") {
 }
 
 graph %>% 
-  f_plotter(g_excel_frontend_dir)
+  f_plotter(file.path(g_excel_frontend_dir, "03. Analysis Plots"))
 
 #====================================================
 
