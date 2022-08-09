@@ -797,8 +797,10 @@ f_graph_section <- function(section_name){
 
 f_plotter <- function(graph, location){
   
+  dir.create(location, showWarnings = FALSE)
+  
   fn = file.path(location, 
-                 paste0("Latest plots ", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf"))
+                 paste0(format(Sys.time(), "%Y%m%d_%H%M%S"), "_Latest plots", ".pdf"))
   
   graph <- graph[lengths(graph) != 0]
   
@@ -989,7 +991,10 @@ f_segmentor <- function(df_in,
     nm <- paste0(file_nm, ifelse(with_weight == T, " - FORCED", " - ORGANIC")) 
     nm <- gsub("\\:", " \\- ", nm)
     
-    png(file.path("..", paste0(nm, ".png")),
+    folder_name  = file.path(g_excel_frontend_dir, "05. CART Trees")
+    dir.create(folder_name, showWarnings = FALSE)
+    
+    png(file.path(folder_name, paste0(nm, ".png")),
         height = 3000,
         width = 8000,
         res = 600)
