@@ -76,8 +76,8 @@ question_creator <- function(card){
   
   # notes
   notes <- df %>% 
-    filter(Notes != "" & !is.na(Notes)) %>% 
-    pull(Notes)
+    filter(File.name != "" & !is.na(File.name)) %>% 
+    pull(File.name)
   
   # fix skip logic filter and convert in one line
   if (rlang::is_empty(condition)){
@@ -275,16 +275,12 @@ for (q_no in unique(data$X1)){
             question_creator()
         
         # For each question, create answers and rbind them
-        # y_label <- d_colmap %>%
-        #   filter(X1 == q[[2]]) %>%
-        #   pull(X2)
-        y_label <- character(0)
-          
-        if (length(q[[7]]) != 0) {y_label <- paste0(q[[7]], 
-                                                    ifelse(length(y_label) > 0, 
-                                                           paste0(" | ", y_label), 
-                                                           ""))}
-        if(length(y_label) == 0) {y_label = "Label could not be loaded - please re-run colnames upload"}
+        
+        if (length(q[[7]]) != 0) {
+          y_label <- substr(paste0(format(Sys.time(), "%y%m%d_%H%M%S"), "_", gsub("_{2,}","_", gsub("\\W","_", q[[7]]))), 1, 40)
+        } else {
+          y_label = "Please give a file name in right-most column" 
+        }
         
         dt_02 %>%
           f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label,
