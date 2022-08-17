@@ -764,7 +764,7 @@ f_graph_2 <- function(.answer,
                          size=3)
   } else {
     p <- p + 
-      ggplot2::geom_text(ggplot2::aes(label=scales::number(value, accuracy = 1.1)), 
+      ggplot2::geom_text(ggplot2::aes(label=scales::number(value)), 
                          position=ggplot2::position_dodge(width=1), 
                          vjust=-1,
                          size=3)
