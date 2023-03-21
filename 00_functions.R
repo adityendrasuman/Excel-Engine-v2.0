@@ -869,7 +869,7 @@ f_log_table <- function(df, title="", output){
 f_grouper <- function(data){
   data %>% 
     group_by_all() %>% 
-    count() %>% 
+    dplyr::count() %>% 
     as.data.frame()
 }
 
