@@ -203,7 +203,10 @@ if (length(var_outlier) > 0){
   close(pb)
   
   if (nrow(summary) > 0) {
-    summary %>% 
+    map %>% 
+      select(var = X1) %>% 
+      left_join(summary, by = c("var")) %>% 
+      mutate(across(everything(), ~ifelse(is.na(.), "-", as.character(.)))) %>% 
       write.table(file = file.path("temp.csv"), sep=",", col.names = F, row.names = F)
   }
 }
