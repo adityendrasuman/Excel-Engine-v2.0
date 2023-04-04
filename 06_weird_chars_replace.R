@@ -32,7 +32,8 @@ glue::glue("\n") %>% f_log_string(g_file_log)
 print(glue::glue("Picking mapping for weird characters from the excel interface..."))
 map <- f_read_xl(g_file_path, namedRegion = "wc3_R", colNames = F) %>% 
   unique() %>% 
-  filter_all(any_vars(!is.na(.)))
+  filter_all(any_vars(!is.na(.))) %>%
+  filter(!is.na(X1))
 
 dt_01_A <- dt_01
 
