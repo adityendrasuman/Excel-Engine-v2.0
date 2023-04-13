@@ -27,8 +27,7 @@ tryCatch(
       necessary.std = c("dplyr", "forcats", "gdata", "glue", "ggplot2", "gridExtra", 
                         "jsonlite", "openxlsx", "purrr", "profvis", "rlang", "srvyr", 
                         "stringr", "stats", "scales", "tidyselect", "tibble", "utils", 
-                        "tidyr", "caret", "janitor", "e1071", "rpart", "rpart.plot",
-                        "tcltk"),
+                        "tidyr", "caret", "janitor", "e1071", "rpart", "rpart.plot", "tcltk"),
       necessary.github = c()
     )
     
@@ -90,10 +89,16 @@ tryCatch(
   }, 
   
   warning = function(warr){
-    tcltk::tk_messageBox(type = c("ok"), warr, caption = "Warning!", default = "", icon = "warning")
-  }
+    
+    print(warr)
+    tcltk::tk_messageBox(type = c("ok"), toString(warr), caption = "Warning!", default = "", icon = "warning")
+  },
     
   error = function(erro){
-    tcltk::tk_messageBox(type = c("ok"), erro, caption = "Error!", default = "", icon = "error")
+    
+    x <<- erro
+    
+    print(class(erro))
+    tcltk::tk_messageBox(type = c("ok"), toString(erro), caption = "Error!", default = "", icon = "error")
   }
 )
