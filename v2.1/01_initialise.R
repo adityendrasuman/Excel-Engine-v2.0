@@ -4,11 +4,12 @@ tryCatch(
     rm(list = ls())
     if (!is.null(dev.list())) dev.off()
     cat("\014")
-    options(show.error.locations = TRUE)
+    options(show.error.locations = "bottom")
     start_time <- Sys.time()
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
+    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|", "C:|Users|User|AppData|Local|Temp|TEMP_R|", "C:|Users|User|Downloads|20230406|20230406|", "interface master v1.2.xlsm", "reset")
     
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
@@ -47,7 +48,7 @@ tryCatch(
     code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
     code_name <- ifelse(is.null(code_full), "", basename(code_full))
     
-    ################################################################
+    #====================================================
     
     # global variables ----
     g_excel_backend_dir                 <- do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]]))
@@ -74,7 +75,7 @@ tryCatch(
         suppressWarnings()
     } 
     
-    ################################################################
+    #====================================================
     
     # Log of run
     glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
@@ -96,14 +97,13 @@ tryCatch(
     }
   }, 
   
-  warning = function(warr){
-    msg = glue::glue("{toString(warr)}\ncheck code '{code_full}'")
+  warning = function(x){
+    msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'")
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "WARNING!", default = "", icon = "warning")
   },
     
-  error = function(erro){
-    msg = glue::glue("{toString(erro)}\ncheck code '{code_full}'")
+  error = function(x){
+    msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'")
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
-  
 )
