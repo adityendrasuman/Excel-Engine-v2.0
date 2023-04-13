@@ -14,9 +14,7 @@ tryCatch(
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
     # load environment ----
-    if (args[5] == "refresh") {
-      if (file.exists("env.RData")) {load("env.RData")}
-    }
+    if (args[5] == "refresh" & file.exists("env.RData")) {load("env.RData")}
     
     # load custom functions ----
     source(do.call(file.path, as.list(strsplit(paste0(args[2], "00_functions.R"), "\\|")[[1]])), 
