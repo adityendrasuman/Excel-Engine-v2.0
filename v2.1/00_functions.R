@@ -1,3 +1,41 @@
+# END BOILERPLATE
+f_ending <- function(code_name, purpose, start_time, pref_autoclose){
+  
+  # Log of run
+  browser()
+  glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
+  glue::glue("{purpose}")%>% f_log_string(g_file_log)
+  glue::glue("\n") %>% f_log_string(g_file_log)
+  glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the environment!") %>% f_log_string(g_file_log)
+  glue::glue("\n\n") %>% f_log_string(g_file_log)
+  
+  # Close the R code ----
+  if (pref_autoclose == T){
+    
+    # remove unnecessary variables from environment ----
+    rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
+    
+    # save environment in a session temp variable ----
+    save.image(file=file.path(g_wd, "env.RData"))
+    
+    print(glue::glue("\n\nAll done!"))
+    for(i in 1:3){
+      print(glue::glue("Finishing in: {4 - i} sec"))
+      Sys.sleep(1)
+    }
+  } else {
+    
+    # remove unnecessary variables from environment ----
+    rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
+    
+    # save environment in a session temp variable ----
+    save.image(file=file.path(g_wd, "env.RData"))
+    
+    msg = glue::glue("Successfully executed '{code_name}' for\n\n '{purpose}'")
+    tcltk::tk_messageBox(type = c("ok"), msg, caption = "SUCCESS!", default = "", icon = "info")
+  }
+}
+
 # LOAD/INSTALL NEEDED LIBRARIES
 f_libraries <- function(necessary.std, necessary.github){
   

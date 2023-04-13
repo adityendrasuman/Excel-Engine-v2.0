@@ -4,11 +4,12 @@ tryCatch(
     rm(list = ls())
     if (!is.null(dev.list())) dev.off()
     cat("\014")
+    options(show.error.locations = TRUE)
     start_time <- Sys.time()
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|", "C:|Users|User|AppData|Local|Temp|TEMP_R|", "C:|Users|User|Downloads|20230406|20230406|", "interface master v1.2.xlsm", "refresh")
+    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|", "C:|Users|User|AppData|Local|Temp|TEMP_R|", "C:|Users|User|Downloads|20230406|20230406|", "interface master v1.2.xlsm", "reset")
     
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
@@ -27,7 +28,8 @@ tryCatch(
       necessary.std = c("dplyr", "forcats", "gdata", "glue", "ggplot2", "gridExtra", 
                         "jsonlite", "openxlsx", "purrr", "profvis", "rlang", "srvyr", 
                         "stringr", "stats", "scales", "tidyselect", "tibble", "utils", 
-                        "tidyr", "caret", "janitor", "e1071", "rpart", "rpart.plot", "tcltk"),
+                        "tidyr", "caret", "janitor", "e1071", "rpart", "rpart.plot", 
+                        "tcltk", "scriptName"),
       necessary.github = c()
     )
     
@@ -35,11 +37,18 @@ tryCatch(
     glue::glue("Package status: {error}") %>% print()
     glue::glue("\n") %>% print()
     
-    # Log of run ----
-    if (args[5] == "refresh") {str = "Refresh: Loading the last saved environment"} 
-    if (args[5] == "reset") {str = "Reset: Initialising a blank environment"}
+    # Code specific inputs ----
+    purpose <- if (args[5] == "refresh") {
+      "REFRESHING: Loading the last saved environment"
+    } else if (args[5] == "reset") {
+      "RESETTING: Initialising a blank environment"
+    }
     
-    #====================================================
+    code_full <- scriptName::current_filename()
+    code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
+    code_name <- ifelse(is.null(code_full), "", basename(code_full))
+    
+    ################################################################
     
     # global variables ----
     g_excel_backend_dir                 <- do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]]))
@@ -49,15 +58,15 @@ tryCatch(
     
     g_file_path                         <- file.path(g_excel_frontend_dir, g_file_name)
     g_wd                                <- g_excel_backend_dir
+    g_file_log                          <- file.path(g_excel_frontend_dir, "Latest R logs.txt")
     
     g_tick                              <- "\u2713"
     g_cross                             <- "\u2715"
-    
-    g_file_log                          <- file.path(g_excel_frontend_dir, "Latest R logs.txt")
+    g_pref_autoclose                    <- T
     
     unlink(g_file_log)
     
-    if (args[6] == "reset") {
+    if (args[5] == "reset") {
       all <- dir(".",  pattern=".*")
       keep <- dir(".",  pattern=".+\\.R$")
       junk <- all[! all %in% keep]
@@ -65,40 +74,21 @@ tryCatch(
         invisible() %>% 
         suppressWarnings()
     } 
-    #====================================================
     
-    # Log of run ----
-    glue::glue("===================== Running '01_initialise.R' =====================") %>% f_log_string(g_file_log) 
-    glue::glue("{str}")%>% f_log_string(g_file_log)
-    glue::glue("\n") %>% f_log_string(g_file_log)
-    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the environment!") %>% f_log_string(g_file_log)
-    glue::glue("\n\n") %>% f_log_string(g_file_log)
-    
-    # remove unnecessary variables from environment ----
-    rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
-    
-    # save environment in a session temp variable ----
-    save.image(file=file.path(g_wd, "env.RData"))
-    
-    # Close the R code ----
-    print(glue::glue("\n\nAll done!"))
-    for(i in 1:3){
-      print(glue::glue("Finishing in: {4 - i} sec"))
-      Sys.sleep(1)
-    }
+    ################################################################
+    f_ending(code_name, purpose, start_time)
   }, 
   
   warning = function(warr){
-    
-    print(warr)
-    tcltk::tk_messageBox(type = c("ok"), toString(warr), caption = "Warning!", default = "", icon = "warning")
+    print(1)
+    msg = glue::glue("{toString(warr)}\ncheck code '{code_full}'")
+    tcltk::tk_messageBox(type = c("ok"), msg, caption = "WARNING!", default = "", icon = "warning")
   },
     
   error = function(erro){
-    
-    x <<- erro
-    
-    print(class(erro))
-    tcltk::tk_messageBox(type = c("ok"), toString(erro), caption = "Error!", default = "", icon = "error")
+    print(2)
+    msg = glue::glue("{toString(erro)}\ncheck code '{code_full}'")
+    tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
+  
 )
