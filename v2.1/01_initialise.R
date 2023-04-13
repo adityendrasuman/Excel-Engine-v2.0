@@ -9,8 +9,7 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|", "C:|Users|User|AppData|Local|Temp|TEMP_R|", "C:|Users|User|Downloads|20230406|20230406|", "interface master v1.2.xlsm", "reset")
-    
+
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
