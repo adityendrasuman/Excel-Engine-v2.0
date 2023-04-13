@@ -4,7 +4,6 @@ tryCatch(
     rm(list = ls())
     if (!is.null(dev.list())) dev.off()
     cat("\014")
-    options(show.error.locations = "bottom")
     start_time <- Sys.time()
     
     # capture variable coming from vba ----
@@ -17,8 +16,7 @@ tryCatch(
     if (args[5] == "refresh" & file.exists("env.RData")) {load("env.RData")}
     
     # load custom functions ----
-    source(do.call(file.path, as.list(strsplit(paste0(args[2], "00_functions.R"), "\\|")[[1]])), 
-           print.eval = TRUE, echo = F)
+    source(do.call(file.path, as.list(strsplit(paste0(args[2], "00_functions.R"), "\\|")[[1]])), print.eval = TRUE, echo = F)
     
     # load libraries ----
     error = f_libraries(
@@ -44,6 +42,11 @@ tryCatch(
     code_full <- scriptName::current_filename()
     code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
     code_name <- ifelse(is.null(code_full), "", basename(code_full))
+  
+    # Log of run ----
+    glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
+    glue::glue("{purpose}")%>% f_log_string(g_file_log)
+    glue::glue("\n") %>% f_log_string(g_file_log)
     
     #====================================================
     
@@ -74,11 +77,8 @@ tryCatch(
     
     #====================================================
     
-    # Log of run
-    glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
-    glue::glue("{purpose}")%>% f_log_string(g_file_log)
-    glue::glue("\n") %>% f_log_string(g_file_log)
-    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the environment!") %>% f_log_string(g_file_log)
+    # Log of run ----
+    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment!") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
     # remove unnecessary variables from environment ----
@@ -87,6 +87,7 @@ tryCatch(
     # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
       
+    # Close the R code ----
     print(glue::glue("\n\nAll done!"))
     for(i in 1:3){
       print(glue::glue("Finishing in: {4 - i} sec"))
