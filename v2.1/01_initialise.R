@@ -9,7 +9,6 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|", "C:|Users|User|AppData|Local|Temp|TEMP_R|", "C:|Users|User|Downloads|20230406|20230406|", "interface master v1.2.xlsm", "reset")
     
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
@@ -60,9 +59,9 @@ tryCatch(
     g_wd                                <- g_excel_backend_dir
     g_file_log                          <- file.path(g_excel_frontend_dir, "Latest R logs.txt")
     
-    g_tick                              <- "\u2713"
-    g_cross                             <- "\u2715"
-    g_pref_autoclose                    <- T
+    # g_tick                              <- "\u2713"
+    # g_cross                             <- "\u2715"
+    # g_pref_autoclose                    <- F
     
     unlink(g_file_log)
     
@@ -76,17 +75,33 @@ tryCatch(
     } 
     
     ################################################################
-    f_ending(code_name, purpose, start_time)
+    
+    # Log of run
+    glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
+    glue::glue("{purpose}")%>% f_log_string(g_file_log)
+    glue::glue("\n") %>% f_log_string(g_file_log)
+    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the environment!") %>% f_log_string(g_file_log)
+    glue::glue("\n\n") %>% f_log_string(g_file_log)
+    
+    # remove unnecessary variables from environment ----
+    rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
+      
+    # save environment in a session temp variable ----
+    save.image(file=file.path(g_wd, "env.RData"))
+      
+    print(glue::glue("\n\nAll done!"))
+    for(i in 1:3){
+      print(glue::glue("Finishing in: {4 - i} sec"))
+      Sys.sleep(1)
+    }
   }, 
   
   warning = function(warr){
-    print(1)
     msg = glue::glue("{toString(warr)}\ncheck code '{code_full}'")
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "WARNING!", default = "", icon = "warning")
   },
     
   error = function(erro){
-    print(2)
     msg = glue::glue("{toString(erro)}\ncheck code '{code_full}'")
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
