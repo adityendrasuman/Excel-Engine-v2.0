@@ -65,7 +65,7 @@ tryCatch(
     
     unlink(g_file_log)
     
-    if (args[5] == "reset") {
+    if (args[6] == "reset") {
       all <- dir(".",  pattern=".*")
       keep <- dir(".",  pattern=".+\\.R$")
       junk <- all[! all %in% keep]
