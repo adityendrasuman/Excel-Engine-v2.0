@@ -20,7 +20,7 @@ tryCatch(
     
     # load libraries ----
     error = f_libraries(
-      necessary.std = c("openxlsx", "dplyr", "glue", "tibble"),
+      necessary.std = c("openxlsx", "dplyr", "glue"),
       necessary.github = c()
     )
     glue::glue("RUNNING R SERVER ...") %>% print()
@@ -46,9 +46,9 @@ tryCatch(
     dt_01 <- read.csv(csv_loc)
     glue::glue("Imported data has {ncol(dt_01)} columns and {nrow(dt_01)} rows") %>% f_log_string(g_file_log)
     
-    # Output unique set of values for each column, upto 100
-    df_unique_val <- data.frame(matrix(ncol=100, nrow=0))
-    for (i in 1:100){
+    # Output unique set of values for each column, upto 50
+    df_unique_val <- data.frame(matrix(ncol=50, nrow=0))
+    for (i in 1:50){
       colnames(df_unique_val)[i] <- paste0("V", i)
     }
 
@@ -57,14 +57,13 @@ tryCatch(
     i = 0
     for (col in colnames(dt_01)){
       
-      unique_val <- dt_01 %>% 
-        select(all_of(col)) %>% 
-        unique() %>% 
-        sample_n(min(100, nrow(.))) 
+      unique_val <- dt_01[col] %>% 
+        unique() %>%
+        sample_n(min(50, nrow(.))) 
       
-      na_rows <- matrix(NA, nrow = 100 - nrow(unique_val), ncol = 1) %>% data.frame()
+      na_rows <- matrix(NA, nrow = 50 - nrow(unique_val), ncol = 1) %>% data.frame()
       colnames(na_rows)[1] <- col
-
+      
       df_unique_val <- unique_val %>% 
         rbind(na_rows) %>% 
         t() %>% 
@@ -75,18 +74,12 @@ tryCatch(
     }
     
     # Save relevant dataset
-    
     glue::glue("\n\n") %>% f_log_string(g_file_log)
-    glue::glue("Exporting a snapshot of raw data for the interface. Please wait ...") %>% f_log_string(g_file_log)
-    
-    df_unique_val %>% 
-      tibble::rownames_to_column("variable") %>% 
-      mutate(entries = rowSums(!is.na(select(., -variable)))) %>% 
-      select(variable, entries, everything()) %>% 
-      write.table(file = file.path("temp_1.csv"), sep=",", col.names = T, row.names = F)
+    glue::glue("Exporting a snapshot of raw data for the interface. Please wait...") %>% f_log_string(g_file_log)
     
     dt_01 %>%
       sample_n(min(25, nrow(dt_01))) %>% 
+      rbind(t(df_unique_val)) %>% 
       write.table(file = file.path("temp.csv"), sep=",", col.names = T, row.names = F)
     
     save(dt_01, file = "dt_01.Rda")
