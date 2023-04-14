@@ -76,11 +76,14 @@ tryCatch(
     
     # Save relevant dataset
     
-    glue::glue("\nExporting a snapshot of raw data for the interface. Please wait ...") %>% f_log_string(g_file_log)
+    glue::glue("\n\n") %>% f_log_string(g_file_log)
+    glue::glue("Exporting a snapshot of raw data for the interface. Please wait ...") %>% f_log_string(g_file_log)
     
     df_unique_val %>% 
       tibble::rownames_to_column("variable") %>% 
-      write.table(file = file.path("temp_1.csv"), sep=",", col.names = T, row.names = F)
+      mutate(entries = rowSums(!is.na(select(., -variable)))) %>% 
+      select(variable, entries, everything()) %>% 
+      write.table(file = file.path("temp_1.csv"), sep=",", col.names = F, row.names = F)
     
     dt_01 %>%
       sample_n(min(25, nrow(dt_01))) %>% 
