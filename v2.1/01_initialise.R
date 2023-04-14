@@ -8,7 +8,7 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-
+    
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
@@ -43,11 +43,6 @@ tryCatch(
     code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
     code_name <- ifelse(is.null(code_full), "", basename(code_full))
   
-    # Log of run ----
-    glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
-    glue::glue("{purpose}")%>% f_log_string(g_file_log)
-    glue::glue("\n") %>% f_log_string(g_file_log)
-    
     #====================================================
     
     # global variables
@@ -80,6 +75,9 @@ tryCatch(
     #====================================================
     
     # Log of run ----
+    glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
+    glue::glue("{purpose}")%>% f_log_string(g_file_log)
+    glue::glue("\n") %>% f_log_string(g_file_log)
     glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
