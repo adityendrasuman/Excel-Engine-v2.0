@@ -20,7 +20,7 @@ tryCatch(
     
     # load libraries ----
     error = f_libraries(
-      necessary.std = c("openxlsx", "dplyr", "glue"),
+      necessary.std = c("openxlsx", "dplyr", "glue", "tibble"),
       necessary.github = c()
     )
     glue::glue("RUNNING R SERVER ...") %>% print()
@@ -52,12 +52,13 @@ tryCatch(
       colnames(df_unique_val)[i] <- paste0("V", i)
     }
 
+    glue::glue("Creating table of unique values in data") %>% f_log_string(g_file_log)
     pb <- txtProgressBar(min = 0, max = ncol(dt_01), style = 3, width = 40)
     i = 0
     for (col in colnames(dt_01)){
       
       unique_val <- dt_01 %>% 
-        select(col) %>% 
+        select(all_of(col)) %>% 
         unique() %>% 
         sample_n(min(100, nrow(.))) 
       
@@ -75,10 +76,10 @@ tryCatch(
     
     # Save relevant dataset
     
-    print(glue::glue("\nDatasets are being prepared for importing into the interface. Please wait ..."))
+    print(glue::glue("\nExporting a snapshot of raw data for the interface. Please wait ..."))
     
     df_unique_val %>% 
-      rownames_to_column("variable") %>% 
+      tibble::rownames_to_column("variable") %>% 
       write.table(file = file.path("temp_1.csv"), sep=",", col.names = T, row.names = F)
     
     dt_01 %>%
