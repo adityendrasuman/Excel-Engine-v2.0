@@ -50,7 +50,7 @@ tryCatch(
     
     #====================================================
     
-    # global variables ----
+    # global variables
     g_excel_backend_dir                 <- do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]]))
     g_excel_backend_temp_nospace_dir    <- do.call(file.path, as.list(strsplit(args[2], "\\|")[[1]]))
     g_excel_frontend_dir                <- do.call(file.path, as.list(strsplit(args[3], "\\|")[[1]]))
@@ -64,8 +64,10 @@ tryCatch(
     # g_cross                             <- "\u2715"
     # g_pref_autoclose                    <- F
     
+    # remove log file
     unlink(g_file_log)
     
+    # if reset then clean interface history folder
     if (args[5] == "reset") {
       all <- dir(".",  pattern=".*")
       keep <- dir(".",  pattern=".+\\.R$")
@@ -78,7 +80,7 @@ tryCatch(
     #====================================================
     
     # Log of run ----
-    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment!") %>% f_log_string(g_file_log)
+    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
     # remove unnecessary variables from environment ----

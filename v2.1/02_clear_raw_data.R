@@ -18,12 +18,11 @@ tryCatch(
     # load custom functions ----
     source(file.path(g_excel_backend_temp_nospace_dir, "00_functions.R"))
     
-    # load librarise ----
+    # load libraries ----
     error = f_libraries(
       necessary.std = c("glue", "dplyr"),
       necessary.github = c()
     )
-    
     glue::glue("RUNNING R SERVER ...") %>% print()
     glue::glue("Package status: {error}") %>% print()
     glue::glue("\n") %>% print()
@@ -50,7 +49,7 @@ tryCatch(
     #====================================================
     
     # Log of run ----
-    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment!") %>% f_log_string(g_file_log)
+    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
     # remove unnecessary variables from environment ----
