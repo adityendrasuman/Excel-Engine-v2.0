@@ -8,7 +8,7 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-    
+
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
