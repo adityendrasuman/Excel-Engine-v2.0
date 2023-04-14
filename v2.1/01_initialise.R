@@ -70,7 +70,7 @@ tryCatch(
       file.remove(junk) %>% 
         invisible() %>% 
         suppressWarnings()
-    } 
+    }
     
     #====================================================
     

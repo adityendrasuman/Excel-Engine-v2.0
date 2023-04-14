@@ -8,7 +8,7 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|", "C:|Users|User|Downloads|20230406|NHB_cleandata_11_04_2023.csv")
+    
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
@@ -42,7 +42,7 @@ tryCatch(
     #====================================================
     
     csv_loc <- do.call(file.path, as.list(strsplit(args[2], "\\|")[[1]]))
-    glue::glue("Importing raw data from the selected CSV file...") %>% print()
+    glue::glue("Importing raw data from the selected CSV file...") %>% f_log_string(g_file_log)
     dt_01 <- read.csv(csv_loc)
     glue::glue("Imported data has {ncol(dt_01)} columns and {nrow(dt_01)} rows") %>% f_log_string(g_file_log)
     
@@ -52,7 +52,7 @@ tryCatch(
       colnames(df_unique_val)[i] <- paste0("V", i)
     }
 
-    glue::glue("Creating table of unique values in data") %>% f_log_string(g_file_log)
+    glue::glue("Creating table of unique values in the data") %>% f_log_string(g_file_log)
     pb <- txtProgressBar(min = 0, max = ncol(dt_01), style = 3, width = 40)
     i = 0
     for (col in colnames(dt_01)){
@@ -76,7 +76,7 @@ tryCatch(
     
     # Save relevant dataset
     
-    print(glue::glue("\nExporting a snapshot of raw data for the interface. Please wait ..."))
+    glue::glue("\nExporting a snapshot of raw data for the interface. Please wait ...") %>% f_log_string(g_file_log)
     
     df_unique_val %>% 
       tibble::rownames_to_column("variable") %>% 
@@ -84,7 +84,7 @@ tryCatch(
     
     dt_01 %>%
       sample_n(min(25, nrow(dt_01))) %>% 
-      write.table(file = file.path("temp_2.csv"), sep=",", col.names = T, row.names = F)
+      write.table(file = file.path("temp.csv"), sep=",", col.names = T, row.names = F)
     
     save(dt_01, file = "dt_01.Rda")
     
