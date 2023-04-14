@@ -83,7 +83,7 @@ tryCatch(
       tibble::rownames_to_column("variable") %>% 
       mutate(entries = rowSums(!is.na(select(., -variable)))) %>% 
       select(variable, entries, everything()) %>% 
-      write.table(file = file.path("temp_1.csv"), sep=",", col.names = F, row.names = F)
+      write.table(file = file.path("temp_1.csv"), sep=",", col.names = T, row.names = F)
     
     dt_01 %>%
       sample_n(min(25, nrow(dt_01))) %>% 
