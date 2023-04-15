@@ -16,9 +16,6 @@ tryCatch(
     load("env.RData")
     load("dt_01.Rda")
     
-    # load custom functions ----
-    source(file.path(g_excel_backend_temp_nospace_dir, "00_functions.R"))
-    
     # load libraries ----
     error = f_libraries(
       necessary.std = c("openxlsx", "dplyr", "glue"),
@@ -50,13 +47,12 @@ tryCatch(
     #====================================================
     
     # Log of run ----
+    glue::glue("\n") %>% f_log_string(g_file_log)
     glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
-    glue::glue("\n\n") %>% f_log_string(g_file_log)
+    glue::glue("\n") %>% f_log_string(g_file_log)
     
-    # remove unnecessary variables from environment ----
+    # clean and save environment in local drive ----
     rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
-    
-    # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
     
     # Close the R code ----
