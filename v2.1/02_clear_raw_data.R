@@ -15,9 +15,6 @@ tryCatch(
     # load environment ----
     load("env.RData")
     
-    # load custom functions ----
-    source(file.path(g_excel_backend_temp_nospace_dir, "00_functions.R"))
-    
     # load libraries ----
     error = f_libraries(
       necessary.std = c("glue", "dplyr"),

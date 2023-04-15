@@ -16,9 +16,6 @@ tryCatch(
     load("env.RData")
     load("dt_01.Rda")
     
-    # load custom functions ----
-    source(file.path(g_excel_backend_temp_nospace_dir, "00_functions.R"))
-    
     # load libraries ----
     error = f_libraries(
       necessary.std = c("dplyr", "stringr", "profvis", "glue"),
@@ -64,7 +61,6 @@ tryCatch(
     #====================================================
     
     # Log of run ----
-    glue::glue("\n") %>% f_log_string(g_file_log)
     glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
