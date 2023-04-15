@@ -29,7 +29,7 @@ tryCatch(
     glue::glue("\n") %>% print()
     
     # Code specific inputs ----
-    purpose <- "Trimming whutespaces around each data value"
+    purpose <- "Trimming whitespaces around each data value"
     
     code_full <- scriptName::current_filename()
     code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
