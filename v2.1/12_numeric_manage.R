@@ -12,7 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01_C.Rda")
+load("dt_01_D.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -34,7 +34,7 @@ map <- f_read_xl(g_file_path, namedRegion = "body_numeric", colNames = F) %>%
   unique()%>% 
   filter_all(any_vars(!is.na(.)))
 
-dt_01_D <- dt_01_C
+dt_01_E <- dt_01_D
 
 print(glue::glue("Ensuring all numeric columns are logged correctly..."))
 
@@ -50,12 +50,12 @@ if (length(var_numeric) > 0){
     tryCatch(
       {
         # try part
-        dt_01_D[,var] = as.numeric(dt_01_D[,var])
+        dt_01_E[,var] = as.numeric(dt_01_E[,var])
       },
       warning = function(w){
         # catch part
         print(glue::glue("!! String values in numeric column '{var}' that will generate 'NA':"))
-        dt_01_D %>% 
+        dt_01_E %>% 
           select(all_of(var)) %>%
           table() %>% 
           as.data.frame() %>% 
@@ -68,11 +68,11 @@ if (length(var_numeric) > 0){
       },
       finally={
         # do part - replace all such string response with octa-9 and blanks with NA
-        dt_01_D <- dt_01_D %>% 
+        dt_01_E <- dt_01_E %>% 
           mutate(!!var_sym := ifelse(stringr::str_detect(!!var_sym, "^[+-]?(\\d*\\.?\\d+|\\d+\\.?\\d*)$", negate = T) &
                                      stringr::str_detect(!!var_sym, "^\\s*$", negate = T), "99999999", !!var_sym))
         
-        dt_01_D[,var] <- as.numeric(dt_01_D[,var]) %>%
+        dt_01_E[,var] <- as.numeric(dt_01_E[,var]) %>%
           suppressWarnings()
       }
     )
@@ -87,7 +87,7 @@ var_char <- char[["X1"]]
 
 if (length(var_char) > 0){
   for (var in var_char){
-    dt_01_D[,var] = as.character(dt_01_D[,var])
+    dt_01_E[,var] = as.character(dt_01_E[,var])
   }
 }
 
@@ -111,7 +111,7 @@ if (length(var_na) > 0){
     
     condn <- paste0(var, " %in% ", condn)
     
-    dt_01_D <- dt_01_D %>% 
+    dt_01_E <- dt_01_E %>% 
       mutate(!!var_sym := ifelse(eval(parse(text=condn)), 99999999, !!var_sym))
   }
 }
@@ -125,7 +125,7 @@ map_outlier <- map %>%
 
 var_outlier <- map_outlier[["X1"]]
 
-dt_01_Octa9 <- dt_01_D
+dt_01_Octa9 <- dt_01_E
 
 if (length(var_outlier) > 0){
   
@@ -150,13 +150,13 @@ if (length(var_outlier) > 0){
     
     dt_01_Octa9[, var] <- ifelse(dt_01_Octa9[, var] < th1_ | dt_01_Octa9[, var] > th2_, 99999999, dt_01_Octa9[, var])
     
-    dt_01_D[, var] <- ifelse(dt_01_Octa9[, var] == 99999999, NA, dt_01_Octa9[, var])
+    dt_01_E[, var] <- ifelse(dt_01_Octa9[, var] == 99999999, NA, dt_01_Octa9[, var])
     
-    min_    <- min(dt_01_D[, var], na.rm = T) %>% suppressWarnings()
-    mean_   <- mean(dt_01_D[, var], na.rm = T)
-    median_ <- median(dt_01_D[, var], na.rm = T)
-    max_    <- max(dt_01_D[, var], na.rm = T) %>% suppressWarnings()
-    sd_     <- sd(dt_01_D[, var], na.rm = T)
+    min_    <- min(dt_01_E[, var], na.rm = T) %>% suppressWarnings()
+    mean_   <- mean(dt_01_E[, var], na.rm = T)
+    median_ <- median(dt_01_E[, var], na.rm = T)
+    max_    <- max(dt_01_E[, var], na.rm = T) %>% suppressWarnings()
+    sd_     <- sd(dt_01_E[, var], na.rm = T)
     
     summary[i, "var"] <- var
     
@@ -165,12 +165,12 @@ if (length(var_outlier) > 0){
       filter(var != "") %>% 
       nrow()
       
-    summary[i, "# NAed (non-numeric)"] <- dt_01_C %>% 
+    summary[i, "# NAed (non-numeric)"] <- dt_01_D %>% 
       filter(stringr::str_detect(!!var_sym, "^[+-]?(\\d*\\.?\\d+|\\d+\\.?\\d*)$", negate = T), 
              stringr::str_detect(!!var_sym, "^\\s*$", negate = T)) %>% 
       nrow()
       
-    summary[i, "# NAed (NA proxies)"] <- dt_01_C %>% 
+    summary[i, "# NAed (NA proxies)"] <- dt_01_D %>% 
       filter(eval(parse(text=condn))) %>% 
       nrow()
     
@@ -219,7 +219,7 @@ glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 
 # Save relevant datasets ----
-save(dt_01_D, file = "dt_01_D.Rda")
+save(dt_01_E, file = "dt_01_E.Rda")
 save(dt_01_Octa9, file = "dt_01_Octa9.Rda")
 
 # remove unnecessary variables from environment ----
@@ -230,7 +230,7 @@ save.image(file=file.path(g_wd, "env.RData"))
 
 # Close the R code ----
 print(glue::glue("\n\nAll done!"))
-for(i in 1:3){
+# for(i in 1:3){
   print(glue::glue("Finishing in: {4 - i} sec"))
   Sys.sleep(1)
 }

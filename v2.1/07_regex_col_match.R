@@ -12,7 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01_A.Rda")
+load("dt_01_B.Rda")
 
 # load libraries ----
 error = f_libraries(
@@ -41,14 +41,14 @@ if (args[2] == "") {
 } else {
   
   # Get column names and questions for OHE
-  columns <- dt_01_A %>% 
+  columns <- dt_01_B %>% 
     select(matches(args[3])) %>% 
     colnames() %>% 
     unique() %>% 
     na.omit() %>% 
     as.list()
     
-  questions <- dt_01_A %>% 
+  questions <- dt_01_B %>% 
     select(matches(args[3])) %>% 
     colnames() %>% 
     stringr::str_extract(args[2]) %>% 
@@ -64,7 +64,7 @@ if (args[2] == "") {
   for (q in questions) {
     
     summary <- summary %>% 
-      rbind(dt_01_A %>%
+      rbind(dt_01_B %>%
               select(matches(paste0("^.*", q, ".*$"))) %>%
               colnames() %>% 
               intersect(columns) %>% 

@@ -12,7 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01_D.Rda")
+load("dt_01_E.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -34,7 +34,7 @@ file.lines <- scan(file_name, what=character(), skip=start-1, sep='\n', quiet = 
 file.lines.collapsed <- paste(file.lines, collapse='\n')
 source(textConnection(file.lines.collapsed), print.eval = TRUE, echo = F)
 
-d <- create_new_col(dt_01_D)
+d <- create_new_col(dt_01_E)
 df_out <- d[[1]]
 d_skip_newcol <- d[[2]]
 

@@ -11,7 +11,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01.Rda")
+load("dt_01_A.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -35,18 +35,18 @@ map <- f_read_xl(g_file_path, namedRegion = "wc3_R", colNames = F) %>%
   filter_all(any_vars(!is.na(.))) %>%
   filter(!is.na(X1))
 
-dt_01_A <- dt_01
+dt_01_B <- dt_01_A
 
 i = 0
-pb <- txtProgressBar(min = 1, max = ncol(dt_01_A), style = 3, width = 40)
+pb <- txtProgressBar(min = 1, max = ncol(dt_01_B), style = 3, width = 40)
 print(glue::glue("Replacing weird characters..."))
 
-for (var in colnames(dt_01_A)){
+for (var in colnames(dt_01_B)){
   for (name in map[,"X1"]){
     
     value <- map[map$X1 == name, "X2"]
       
-    dt_01_A[, var] <- gsub(name, value, dt_01_A[, var])  
+    dt_01_B[, var] <- gsub(name, value, dt_01_B[, var])  
   }
   i = i + 1
   setTxtProgressBar(pb, i)
@@ -56,7 +56,7 @@ close(pb)
 print(glue::glue("Double checking..."))
 supplied_weird_chr <- f_read_xl(g_file_path, namedRegion = "wc1_R", colNames = F)
 weird_chr <- paste(c("[^\x01-\x7F]", supplied_weird_chr[[1]]), collapse = "|")
-summary <- f_id_char(dt_01_A, weird_chr)
+summary <- f_id_char(dt_01_B, weird_chr)
 
 if(is.null(nrow(summary))) {
   glue::glue("Any occurance of weird characters has been replaced") %>% f_log_string(g_file_log)
@@ -66,7 +66,7 @@ if(is.null(nrow(summary))) {
   glue::glue("Please remove manually in the raw data and upload it again") %>% f_log_string(g_file_log)
 }
 
-dt_01_B <- dt_01_A # IN CASE LIVE CAPTURE IS SKIPPED
+dt_01_C <- dt_01_B # IN CASE LIVE CAPTURE IS SKIPPED
 #====================================================
 
 # Log of run ----
@@ -79,8 +79,8 @@ glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 
 # Save relevant datasets ----
-save(dt_01_A, file = "dt_01_A.Rda")
 save(dt_01_B, file = "dt_01_B.Rda")
+save(dt_01_C, file = "dt_01_C.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))

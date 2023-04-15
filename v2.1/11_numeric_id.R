@@ -12,7 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01_C.Rda")
+load("dt_01_D.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -31,12 +31,12 @@ glue::glue("This code identifies columns in the data that have one or more full 
 
 summary <- data.frame(matrix(ncol = 3, nrow = 0))
 colnames(summary) <- c("variable", "value", "n")
-pb <- txtProgressBar(min = 1, max = ncol(dt_01_C), style = 3, width = 40)
+pb <- txtProgressBar(min = 1, max = ncol(dt_01_D), style = 3, width = 40)
 print(glue::glue("Checking columns for one or more numeric responses..."))
 i = 0
 
-for (var in colnames(dt_01_C)) {
-  summary <- dt_01_C %>%
+for (var in colnames(dt_01_D)) {
+  summary <- dt_01_D %>%
     select(all_of(var)) %>%
     group_by_all() %>% 
     count() %>% 

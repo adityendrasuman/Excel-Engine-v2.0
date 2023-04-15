@@ -12,7 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01_B.Rda")
+load("dt_01_C.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -36,7 +36,7 @@ map <- f_read_xl(g_file_path, namedRegion = "incomplete_R", colNames = F) %>%
   unique() %>% 
   filter_all(any_vars(!is.na(.)))
 
-dt_01_C <- dt_01_B 
+dt_01_D <- dt_01_C 
 
 if (nrow(map) == 0){
   print(glue::glue("Your input indicates no incomlete response"))
@@ -51,20 +51,20 @@ if (nrow(map) == 0){
     
     for (name in names[[1]]){
       
-      n_row_old <- dt_01_C %>% 
+      n_row_old <- dt_01_D %>% 
         select(all_of(var)) %>% 
         filter(!!rlang::sym(var) == name) %>% 
         nrow()
       
       value <- map[map$X2 == name, "X3"]
-      dt_01_C[, var] <- ifelse(dt_01_C[, var] == name, value, dt_01_C[, var])
+      dt_01_D[, var] <- ifelse(dt_01_D[, var] == name, value, dt_01_D[, var])
       
-      n_row_old_after <- dt_01_C %>% 
+      n_row_old_after <- dt_01_D %>% 
         select(all_of(var)) %>% 
         filter(!!rlang::sym(var) == name) %>% 
         nrow()
       
-      n_row_new <- dt_01_C %>% 
+      n_row_new <- dt_01_D %>% 
         select(all_of(var)) %>% 
         filter(!!rlang::sym(var) == value) %>% 
         nrow()
@@ -88,7 +88,7 @@ glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log
 glue::glue("\n\n") %>% f_log_string(g_file_log)
 
 # Save relevant datasets ----
-save(dt_01_C, file = "dt_01_C.Rda")
+save(dt_01_D, file = "dt_01_D.Rda")
 
 # remove unnecessary variables from environment ----
 rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))

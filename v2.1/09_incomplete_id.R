@@ -12,7 +12,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_01_B.Rda")
+load("dt_01_C.Rda")
 
 # load librarise ----
 error = f_libraries(
@@ -34,19 +34,19 @@ threshold = as.numeric(args[2])
 
 glue::glue("Searching for strings with {threshold} or more characters...") %>% print()
 
-list_of_variables <- dt_01_B %>%
+list_of_variables <- dt_01_C %>%
   colnames()
 
 summary <- purrr::map_dfr(list_of_variables, function(var) {
   
-  temp <- dt_01_B %>%
+  temp <- dt_01_C %>%
     pull(!!var) %>%
     nchar() %>%
     max(na.rm = TRUE) %>% 
     suppressWarnings()
   
   if (temp >= threshold) {
-    dt_01_B %>%
+    dt_01_C %>%
       select(response = !!var) %>%
       count(response) %>%
       mutate(no_of_char = nchar(response),
