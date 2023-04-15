@@ -70,16 +70,10 @@ tryCatch(
       setTxtProgressBar(pb, i)
     }
     
-    # Save relevant dataset
-    glue::glue("\n\n") %>% f_log_string(g_file_log)
-    glue::glue("Exporting a snapshot of raw data for the interface. Please wait...") %>% f_log_string(g_file_log)
-    
     dt_01 %>%
       sample_n(min(25, nrow(dt_01))) %>% 
       rbind(t(df_unique_val)) %>% 
       write.table(file = file.path("temp.csv"), sep=",", col.names = T, row.names = F)
-    
-    save(dt_01, file = "dt_01.Rda")
     
     #====================================================
     
@@ -92,6 +86,7 @@ tryCatch(
     
     # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
+    save(dt_01, file = "dt_01.Rda")
     
     # Close the R code ----
     print(glue::glue("\n\nAll done!"))

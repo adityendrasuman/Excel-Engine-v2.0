@@ -56,8 +56,6 @@ tryCatch(
       summary %>% f_log_table("List of White spaces that could not be removed", g_file_log)
     }
     
-    # Save relevant datasets ----
-    save(dt_01_A, file = "dt_01_A.Rda")
     #====================================================
     
     # Log of run ----
@@ -69,6 +67,7 @@ tryCatch(
     
     # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
+    save(dt_01_A, file = "dt_01_A.Rda")
     
     # Close the R code ----
     print(glue::glue("\n\nAll done!"))
