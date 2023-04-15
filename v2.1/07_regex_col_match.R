@@ -111,17 +111,16 @@ tryCatch(
       summary %>% 
         write.table(file = file.path("temp.csv"), sep=",", col.names = F, row.names = F)
     }
+    
     #====================================================
     
     # Log of run ----
     glue::glue("\n") %>% f_log_string(g_file_log)
-    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs") %>% f_log_string(g_file_log)
+    glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
-    # remove unnecessary variables from environment ----
+    # clean and save environment in a session temp variable ----
     rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
-    
-    # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
     
     # Close the R code

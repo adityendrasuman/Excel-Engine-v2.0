@@ -84,6 +84,10 @@ tryCatch(
       summary %>% f_log_table("List of Unrecognised Characters that could not be removed", g_file_log)
     }
     
+    # save relevant dataset ----
+    save(dt_01_B, file = "dt_01_B.Rda")
+    save(dt_01_C, file = "dt_01_C.Rda")
+    
     #====================================================
     
     # Log of run ----
@@ -91,13 +95,9 @@ tryCatch(
     glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
-    # remove unnecessary variables from environment ----
+    # clean and save environment in a session temp variable ----
     rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
-    
-    # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
-    save(dt_01_B, file = "dt_01_B.Rda")
-    save(dt_01_C, file = "dt_01_C.Rda")
     
     # Close the R code ----
     print(glue::glue("\n\nAll done!"))

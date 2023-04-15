@@ -75,18 +75,19 @@ tryCatch(
       rbind(t(df_unique_val)) %>% 
       write.table(file = file.path("temp.csv"), sep=",", col.names = T, row.names = F)
     
+    # save relevant dataset in local drive ----
+    save(dt_01, file = "dt_01.Rda")
+    
     #====================================================
     
     # Log of run ----
+    glue::glue("\n") %>% f_log_string(g_file_log)
     glue::glue("finished run in {round(Sys.time() - start_time, 0)} secs. Saving the analysis environment") %>% f_log_string(g_file_log)
     glue::glue("\n\n") %>% f_log_string(g_file_log)
     
-    # remove unnecessary variables from environment ----
+    # clean and save environment in local drive ----
     rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
-    
-    # save environment in a session temp variable ----
     save.image(file=file.path(g_wd, "env.RData"))
-    save(dt_01, file = "dt_01.Rda")
     
     # Close the R code ----
     print(glue::glue("\n\nAll done!"))
