@@ -8,13 +8,13 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-    args <- c("C:|Users|User|Downloads|20230406|20230406|interface history|")
+    
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
     # load environment ----
     load("env.RData")
-    # load("dt_01_A.Rda")
+    load("dt_01_A.Rda")
     
     # load libraries ----
     error = f_libraries(
@@ -75,11 +75,13 @@ tryCatch(
   
   warning = function(x){
     msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'")
+    Sys.sleep(1)
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "WARNING!", default = "", icon = "warning")
   },
   
   error = function(x){
     msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'")
+    Sys.sleep(1)
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
