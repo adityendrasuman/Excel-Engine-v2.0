@@ -14,7 +14,6 @@ tryCatch(
     
     # load environment ----
     load("env.RData")
-    load("dt_02.Rda")
     
     # load librarise ----
     error = f_libraries(
@@ -26,7 +25,7 @@ tryCatch(
     glue::glue("\n") %>% print()
     
     # Code specific inputs ----
-    purpose <- "Downloading full clean data with user added columns for inspection"
+    purpose <- "Uploading column names mapping into the analysis environment"
     
     code_full <- scriptName::current_filename()
     code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
@@ -36,14 +35,12 @@ tryCatch(
     glue::glue("===================== Running '{code_name}' =====================") %>% f_log_string(g_file_log) 
     glue::glue("{purpose}")%>% f_log_string(g_file_log)
     glue::glue("\n") %>% f_log_string(g_file_log)
-
-    #====================================================
-
-    glue::glue("Please wait...") %>% f_log_string(g_file_log)
     
-    dt_02 %>%
-      write.table(file = file.path("temp.csv"), sep=",", col.names = T, row.names = F)
-
+    #====================================================
+    
+    d_colmap <- f_read_xl(g_file_path, namedRegion = "Column_Map", colNames = F)
+    print(glue::glue("Imported data has {ncol(d_colmap)} columns and {nrow(d_colmap)} rows"))
+    
     #====================================================
     
     # Log of run ----
@@ -55,7 +52,7 @@ tryCatch(
     rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
     save.image(file=file.path(g_wd, "env.RData"))
     
-    # Close the R code ----
+    # Close the R code
     print(glue::glue("\n\nAll done!"))
     for(i in 1:3){
       print(glue::glue("Finishing in: {4 - i} sec"))

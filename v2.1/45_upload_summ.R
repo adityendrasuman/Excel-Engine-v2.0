@@ -14,11 +14,10 @@ tryCatch(
     
     # load environment ----
     load("env.RData")
-    load("dt_02.Rda")
     
     # load librarise ----
     error = f_libraries(
-      necessary.std = c("openxlsx", "glue", "dplyr"),
+      necessary.std = c("dplyr", "openxlsx", "rlang", "glue", "jsonlite"),
       necessary.github = c()
     )
     glue::glue("RUNNING R SERVER ...") %>% print()
@@ -26,7 +25,7 @@ tryCatch(
     glue::glue("\n") %>% print()
     
     # Code specific inputs ----
-    purpose <- "Downloading full clean data with user added columns for inspection"
+    purpose <- "Uploading Summariser and Weights information into the R environment"
     
     code_full <- scriptName::current_filename()
     code_path <- ifelse(is.null(code_full), "", dirname(code_full)) 
@@ -37,13 +36,47 @@ tryCatch(
     glue::glue("{purpose}")%>% f_log_string(g_file_log)
     glue::glue("\n") %>% f_log_string(g_file_log)
 
-    #====================================================
-
-    glue::glue("Please wait...") %>% f_log_string(g_file_log)
+        # Log of run ----
+    glue::glue("===================== Running '45_ipload_summ.R' =====================")
+    glue::glue("")
+    glue::glue("\n") %>% f_log_string(g_file_log)
     
-    dt_02 %>%
-      write.table(file = file.path("temp.csv"), sep=",", col.names = T, row.names = F)
-
+    #====================================================
+    
+    glue::glue("Importing summariser info ...") %>% print()
+    
+    json_str <- gsub("~", '"', args[2]) 
+    d_summ <- jsonlite::fromJSON(json_str) %>% 
+      apply(2, function(x) gsub("^$|^ $", NA, x)) %>% 
+      as.data.frame() %>% 
+      dplyr::select_if(function(x){any(!is.na(x))})
+    
+    row.names(d_summ) <- d_summ$NAME
+    d_summ["NAME"] <- NULL
+    
+    for (name1 in colnames(d_summ)){
+      name_sym <- name1 %>% 
+        rlang::sym()
+      
+      filled <- d_summ %>% 
+        filter(!is.na(!!name_sym), !(!!name_sym %in% c("", " ", "-"))) %>% 
+        nrow()
+      
+      if (filled == 0) {
+        d_summ <- d_summ %>% select(-all_of(name1))
+        glue::glue("summariser '{name1}' is blank and hence dropped") %>% f_log_string(g_file_log)
+      }
+      
+      if (filled == 1 | filled == 2) {
+        glue::glue("summariser '{name1}' is incomplete. It will not be loaded") %>% f_log_string(g_file_log)
+        d_summ <- d_summ %>% select(-all_of(name1))
+      }
+      
+      if (filled == 3) {
+        glue::glue("summariser '{name1}' loaded") %>% f_log_string(g_file_log)
+      }
+    }
+    
     #====================================================
     
     # Log of run ----
@@ -55,8 +88,7 @@ tryCatch(
     rm(list = setdiff(ls(), ls(pattern = "^(d_|g_|f_)")))
     save.image(file=file.path(g_wd, "env.RData"))
     
-    # Close the R code ----
-    print(glue::glue("\n\nAll done!"))
+    print(glue::glue("\n\n All done!"))
     for(i in 1:3){
       print(glue::glue("Finishing in: {4 - i} sec"))
       Sys.sleep(1)
@@ -73,3 +105,4 @@ tryCatch(
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
+    
