@@ -88,7 +88,8 @@ tryCatch(
     
     # Add question number to the skip logic map
     map <- map %>% 
-      left_join(regex_q_mapping, by =c("check_var_regex"), multiple = "all", relationship = "many-to-many")
+      left_join(regex_q_mapping, by =c("check_var_regex"), multiple = "all")
+      #relationship = "many-to-many"
     
     map %>%
       write.table(file = file.path("skip_logic_map.csv"), sep=",", col.names = T, row.names = F)
