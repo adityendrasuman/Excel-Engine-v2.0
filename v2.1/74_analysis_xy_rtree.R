@@ -13,7 +13,9 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_02.Rda")
+load("dt_03.Rda")
+
+dt_inp <- dt_03
 
 source(file.path(g_excel_backend_temp_nospace_dir, "00_functions.R"))
 
@@ -282,11 +284,11 @@ for (q_no in unique(data$X1)){
           y_label = "Please give a file name in right-most column" 
         }
         
-        dt_02 %>%
+        dt_inp %>%
           f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label,
                       min_samp = args[[3]])
         
-        dt_02 %>%
+        dt_inp %>%
           f_segmentor(s = q[[1]], y_in = q[[2]], filter_in = q[[3]], x_all_in = q[[4]], file = y_label, 
                       min_samp = args[[3]], with_weight = T)
         
