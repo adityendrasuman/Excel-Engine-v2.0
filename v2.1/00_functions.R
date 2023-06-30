@@ -200,6 +200,8 @@ f_cross_tab <- function(.data,
 }
 
 f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
+    
+  data <- data %>% filter(!is.na(!!rlang::sym(y)))
   
   if (s %in% colnames(d_summ) & !is.na(y) & y != ""){  
     
