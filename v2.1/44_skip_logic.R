@@ -88,7 +88,7 @@ tryCatch(
     
     # Add question number to the skip logic map
     map <- map %>% 
-      left_join(regex_q_mapping, by =c("check_var_regex"), multiple = "all", relationship = "many-to-many", relationship = "many-to-many")
+      left_join(regex_q_mapping, by =c("check_var_regex"), multiple = "all", relationship = "many-to-many")
       #relationship = "many-to-many"
     
     map %>%
