@@ -31,6 +31,8 @@ glue::glue("===================== Running '73_analyse_xy_custom.R' =============
 glue::glue("This analyses given y agianst one or more x variables, with custom filters") %>% f_log_string(g_file_log)
 
 #====================================================
+stat <- "mean"           # (mean, median, total)
+
 question_creator <- function(card){
   
   df <- card
@@ -414,7 +416,7 @@ for (q_no in unique(data$X1)){
           }
           
           answer <- dt_02 %>% 
-            f_answer_creator(s = q[[1]], y = q[[2]], condition_2 = q[[3]], q[[4]]) %>%
+            f_answer_creator(s = q[[1]], y = q[[2]], condition_2 = q[[3]], stat, q[[4]]) %>%
             suppressWarnings() %>% 
             mutate(question = y_label2) %>% 
             rbind(answer)

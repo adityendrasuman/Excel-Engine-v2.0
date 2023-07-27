@@ -199,7 +199,7 @@ f_cross_tab <- function(.data,
   
 }
 
-f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
+f_answer_creator <- function(data, s, y, condition_2 = "T", stat, ...){
     
   data <- data %>% filter(!is.na(!!rlang::sym(y)))
   
@@ -230,7 +230,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
         summary <- data %>%
           mutate(value_2 = eval(parse(text=condition_2))) %>%
           filter(as.logical(value_2) == T) %>%
-          summariser(!!y_sym)
+          summariser(!!y_sym, stat=stat)
         
       } else if (length(x_all) > 0){
         
@@ -241,7 +241,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
           f_combine_columns(group_var_col, x_all_regex, "matches") %>%  
           mutate(value_2 = eval(parse(text=condition_2))) %>% 
           filter(as.logical(value_2) == T) %>%
-          summariser(!!y_sym, group_var_col)
+          summariser(!!y_sym, group_var_col, stat = stat)
       }
     
     } else if (class(data[[y]]) == "numeric") {
@@ -251,7 +251,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
         summary <- data %>%
           mutate(value_2 = eval(parse(text=condition_2))) %>%
           filter(as.logical(value_2) == T) %>%
-          summariser(!!y_sym)
+          summariser(!!y_sym, stat = stat)
         
       } else if (length(x_all) > 0){
         
@@ -262,7 +262,7 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", ...){
           f_combine_columns(group_var_col, x_all_regex, "matches") %>%  
           mutate(value_2 = eval(parse(text=condition_2))) %>% 
           filter(as.logical(value_2) == T) %>%
-          summariser(!!y_sym, group_var_col) %>% 
+          summariser(!!y_sym, group_var_col, stat = stat) %>% 
           select(-group, group = response)
       }
     }
