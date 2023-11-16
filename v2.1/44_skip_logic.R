@@ -73,11 +73,13 @@ tryCatch(
     questions_regex <- map %>% 
       pull(check_var_regex) %>% 
       unique()
+
+    grep_vars2 <- function (needle, haystack, ...) {grep(needle, haystack, perl = TRUE, ...)}
+    matches2 <- function (match, ignore.case = TRUE, vars = tidyselect::peek_vars()) {grep_vars2(match, vars, ignore.case = ignore.case)}
     
     for (q_regex in questions_regex) {
-      
       regex_q_mapping <- dt_02 %>% 
-        select(matches(q_regex)) %>% 
+        select(matches2(q_regex)) %>%  
         colnames() %>% 
         as.data.frame() %>% 
         select(check_var = 1) %>% 
