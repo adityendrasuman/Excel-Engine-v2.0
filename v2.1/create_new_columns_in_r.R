@@ -45,34 +45,31 @@ create_new_col <- function(df_in){
   # START OF SPACE FOR DEFINING COLUMNS
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  # 000: Unit Weight (don't delete) ----
+  #000a: <Column name> ---- 
   
-    # STEP 1: Define the column
-    df_out <- df_out %>% 
-      mutate(
-        z_unit_weight = 1
-      )
-    
-    # STEP 2: Check if the column is correctly created
-    df_out %>% 
-      select(z_unit_weight) %>% 
-      f_grouper()
-    
-    # STEP 3: Apply the skip logic on new column based on combination of existing columns using '(', '&', '|'
-    # example a: add_to_skip("new_col", "T") when no skip logic needs to be assigned
-    # example b: add_to_skip("new_col", "col1", "col2") intersection of two columns is required
-    # example c: add_to_skip("new_col", "col1 & (col2 | col3)") when a more complex combination is required
-    
-    df_skip_info <- df_skip_info %>%
-      add_to_skip ("z_unit_weight", "state", "dist")
+  # STEP 1: Define the column
+  # STEP 2: Check if the column is correctly created
+  # STEP 3: Apply the skip logic on new column based on combination of existing columns using (, &, |
+  # example 1: add_to_skip("new_col", "T") when no skip logic needs to be assigned
+  # example 2: add_to_skip("new_col", "col1", "col2") intersection of two columns is required
+  # example 3: add_to_skip("new_col", "col1 & (col2 | col3)") when a more complex combination is required
   
-  # 001: <Column name> ----
+  #000b: (Illustration - don't delete) Unit Weight ----
   
-    # STEP 1: Define the column
+  # STEP 1: Define the column
+  df_out <- df_out %>% 
+    mutate(
+      z_unit_weight = 1
+    )
   
-    # STEP 2: Check if the column is correctly created
+  # STEP 2: Check if the column is correctly created
+  df_out %>% 
+    select(z_unit_weight) %>% 
+    f_grouper()
   
-    # STEP 3: Apply the skip logic on new column based on combination of existing columns using (, &, |
+  # STEP 3: Apply the skip logic on new column based on combination of existing columns using '(', '&', '|'
+  df_skip_info <- df_skip_info %>%
+    add_to_skip ("z_unit_weight", "T")
 
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
