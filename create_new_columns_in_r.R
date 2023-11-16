@@ -50,7 +50,7 @@ create_new_col <- function(df_in){
     # example 2: add_to_skip("new_col", "col1", "col2") intersection of two columns is required
     # example 3: add_to_skip("new_col", "col1 & (col2 | col3)") when a more complex combination is required
   
-  #000b: (illustration - don't delete) Unit Weight ----
+  #000b: (Illustration - don't delete) Unit Weight ----
   
   # STEP 1: Define the column
   df_out <- df_out %>% 
