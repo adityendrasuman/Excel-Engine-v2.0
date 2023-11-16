@@ -40,27 +40,36 @@ create_new_col <- function(df_in){
   colnames(df_skip_info) <- c("new", "old")
   
   # ++++++++++++++++++++++++++START OF SPACE FOR DEFINING NEW COLUMNS++++++++++++++++++++++++++
+
+  #000a: <Column name> ---- 
   
-  # C00: <Describe column here e.g, 'All' x> ----
+  # STEP 1: Define the column
+  # STEP 2: Check if the column is correctly created
+  # STEP 3: Apply the skip logic on new column based on combination of existing columns using (, &, |
+    # example a: add_to_skip("new_col", "T") when no skip logic needs to be assigned
+    # example b: add_to_skip("new_col", "col1", "col2") intersection of two columns is required
+    # example c: add_to_skip("new_col", "col1 & (col2 | col3)") when a more complex combination is required
   
-  # Define the column
+  #000b: (illustration - don't delete) Unit Weight ----
+  
+  # STEP 1: Define the column
   df_out <- df_out %>% 
     mutate(
-      z_all = "All"
+      z_unit_weight = 1
     )
   
-  # Check if the column is correctly created
+  # STEP 2: Check if the column is correctly created
   df_out %>% 
-    select(z_all) %>% 
+    select(z_unit_weight) %>% 
     f_grouper()
   
-  # Apply the skip logic on new column based on combination of existing columns using (, &, |
+  # STEP 3: Apply the skip logic on new column based on combination of existing columns using '(', '&', '|'
   df_skip_info <- df_skip_info %>%
-    add_to_skip ("z_all", "T")
+    add_to_skip ("z_unit_weight", "T")
   
-  # C01: <Description> ----
+  # 001: <Description> ----
 
-  # C02: <Description> ----
+  # 002: <Description> ----
 
   # ++++++++++++++++++++++++++ END OF SPACE FOR DEFINING NEW COLUMNS ++++++++++++++++++++++++++
   return (list(df_out, df_skip_info))
