@@ -31,6 +31,7 @@ glue::glue("===================== Running '72_analyse_xy_one_one.R' ============
 glue::glue("This analyses given y agianst given x variables, with default filters") %>% f_log_string(g_file_log)
 
 #====================================================
+stat <- "mean"           # (mean, median, total)
 question_creator <- function(query, i){
   
   # Get question row
@@ -126,7 +127,7 @@ if (args[2] == "all") {
     question_creator(row)
   
   answer <- dt_02 %>% 
-    f_answer_creator(q[[1]], q[[2]], q[[3]], q[[4]]) %>% 
+    f_answer_creator(q[[1]], q[[2]], q[[3]], stat, q[[4]]) %>% 
     suppressWarnings()
   
   numeric_y = ifelse(class(dt_02[[q[[2]]]]) == "numeric", T, F)
