@@ -7,8 +7,6 @@ start_time <- Sys.time()
 
 # capture variable coming from vba ----
 args <- commandArgs(trailingOnly=T)
-args <- c("C:|Users|ShraddhaTalwar|Desktop|08. training folder|interface history|")
-
 
 # set working director ----
 setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
