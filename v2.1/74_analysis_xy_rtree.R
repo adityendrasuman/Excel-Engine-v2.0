@@ -15,7 +15,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 load("env.RData")
 load("dt_03.Rda")
 
-dt_inp <- dt_03
+dt_inp <- dt_02
 
 source(file.path(g_excel_backend_temp_nospace_dir, "00_functions.R"))
 
