@@ -13,7 +13,7 @@ setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
 
 # load environment ----
 load("env.RData")
-load("dt_03.Rda")
+load("dt_02.Rda")
 
 dt_inp <- dt_02
 
