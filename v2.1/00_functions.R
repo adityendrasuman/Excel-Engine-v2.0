@@ -1178,7 +1178,7 @@ summariser_base.default <- function(.data,
     if (!IS_NUMERIC &
         stat != "total") {
       .data <- .data %>%
-        dplyr::mutate(dplyr::across(starts_with("value"), ~ scales::percent(.x, digits = 2)))
+        dplyr::mutate(dplyr::across(starts_with("value"), ~ scales::percent(.x, accuracy = 0.01)))
     } else {
       .data <- .data %>%
         dplyr::mutate(dplyr::across(where(is.numeric), ~round(.x, 2)))
