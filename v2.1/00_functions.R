@@ -2,8 +2,7 @@
 f_libraries <- function(necessary.std, necessary.github){
   
   # Define and create user lib path (if it doesnt exist) where they have write permission for sure
-  # lib_path <- file.path(path.expand('~'), "ExR", "Rlib")
-  lib_path <- file.path("C:","DoNotBackup", "ExR", "Rlib")
+  lib_path <- file.path(path.expand('~'), "ExR", "Rlib")
   dir.create(lib_path, recursive = TRUE, showWarnings = FALSE)
   lib_default <- .libPaths(c(""))
   
