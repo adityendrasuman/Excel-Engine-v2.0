@@ -41,7 +41,8 @@ tryCatch(
     
     print(glue::glue("Picking mapping for weird characters from the excel interface..."))
     
-    df_temp <- f_read_xl(g_file_path, namedRegion = "wc3_R", colNames = F)
+    df_temp <- f_read_xl(g_file_path, namedRegion = "wc3_R", colNames = F) %>% 
+      suppressWarnings()
     
     if (is.null(df_temp) || nrow(df_temp) == 0){
       map <- data.frame(X1 = character(0), X2 = character(0), stringsAsFactors = FALSE)
