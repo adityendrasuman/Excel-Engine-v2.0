@@ -40,10 +40,17 @@ tryCatch(
     #====================================================
     
     print(glue::glue("Picking mapping for weird characters from the excel interface..."))
-    map <- f_read_xl(g_file_path, namedRegion = "wc3_R", colNames = F) %>% 
-      unique() %>% 
-      filter_all(any_vars(!is.na(.))) %>%
-      filter(!is.na(X1))
+    
+    df_temp <- f_read_xl(g_file_path, namedRegion = "wc3_R", colNames = F)
+    
+    if (is.null(df_temp) || nrow(df_temp) == 0){
+      map <- data.frame(X1 = character(0), X2 = character(0), stringsAsFactors = FALSE)
+    } else {
+      map <- df_temp %>%
+        unique() %>%
+        filter_all(any_vars(!is.na(.))) %>%
+        filter(!is.na(X1))
+    }
     
     dt_01_B <- dt_01_A
     
