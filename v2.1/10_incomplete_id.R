@@ -64,17 +64,22 @@ tryCatch(
           select(-n) %>%
           return()
       }
-    }) %>%
-      select(variable, everything()) %>% 
-      arrange(-no_of_char) %>%
-      select(variable, response) %>%
-      mutate(replacement = "~") %>% 
-      filter(!stringr::str_detect(variable, "(_OTH|_OE)$"))
+    }) 
     
-    if (nrow(summary) > 0) {
-      summary %>% 
-        write.table(file = file.path("temp.csv"), sep=",", col.names = F, row.names = F)
+    if (nrow(summary) == 0){
+      summary <- data.frame()
+      
+    } else {
+      summary <- summary %>%
+        select(variable, everything()) %>% 
+        arrange(-no_of_char) %>%
+        select(variable, response) %>%
+        mutate(replacement = "~") %>% 
+        filter(!stringr::str_detect(variable, "(_OTH|_OE)$"))
     }
+    
+    summary %>% 
+      write.table(file = file.path("temp.csv"), sep=",", col.names = F, row.names = F)
     
     #====================================================
     
