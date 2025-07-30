@@ -40,11 +40,18 @@ tryCatch(
     #====================================================
     
     print(glue::glue("Picking mapping for incomplete responses from the excel interface..."))
-    map <- f_read_xl(g_file_path, namedRegion = "incomplete_R", colNames = F) %>% 
-      filter(X3 != "~") %>% 
-      filter(X3 != X2) %>% 
-      unique() %>% 
-      filter_all(any_vars(!is.na(.)))
+    
+    df_temp <- f_read_xl(g_file_path, namedRegion = "incomplete_R", colNames = F)
+    
+    if (is.null(df_temp) || nrow(df_temp) == 0){
+      map <- data.frame(X1 = character(0), X2 = character(0), X3=character(0), stringsAsFactors = FALSE)
+    } else {
+      map <- df_temp %>%
+        filter(X3 != "~") %>% 
+        filter(X3 != X2) %>% 
+        unique() %>% 
+        filter_all(any_vars(!is.na(.)))
+    }
     
     dt_01_D <- dt_01_C 
     
