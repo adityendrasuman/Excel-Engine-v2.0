@@ -369,7 +369,7 @@ tryCatch(
                blank_when_condition_met,
                error_id,
                condition) %>%
-        write.table(file = file.path("skip_logic_error_log.csv"), sep=",", col.names = T, row.names = F)
+        write.csv(file.path("skip_logic_error_log.csv"), row.names=FALSE)
     }
     #====================================================
     
@@ -399,4 +399,5 @@ tryCatch(
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
+
 
