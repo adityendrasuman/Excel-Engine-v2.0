@@ -390,14 +390,15 @@ tryCatch(
   }, 
   
   warning = function(x){
-    msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'. Also check skip_logic_map.csv for NA in the last column.")
+    msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'. Issue question: {q_no}. Also check skip_logic_map.csv for NA in the last column.")
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "WARNING!", default = "", icon = "warning")
   },
   
   error = function(x){
-    msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'. Also check skip_logic_map.csv for NA in the last column.")
+    msg = glue::glue("{toString(x)}\n\ncheck code '{code_full}'. Issue question: {q_no}. Also check skip_logic_map.csv for NA in the last column.")
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
+
 
 
