@@ -8,7 +8,7 @@ tryCatch(
     
     # capture variable coming from vba ----
     args <- commandArgs(trailingOnly=T)
-
+    
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
     
@@ -46,7 +46,11 @@ tryCatch(
       map <- data.frame(X1 = character(0), X2 = character(0), X3=character(0), X4 = character(0), X5=character(0), stringsAsFactors = FALSE)
     } else {
       
-      if (ncol(df_temp) == 4) {
+      if (ncol(df_temp) == 3) {
+        map <- df_temp %>% 
+          mutate(X4 = NA_character_) %>% 
+          mutate(X5 = "")
+      } else if (ncol(df_temp) == 4) {
         map <- df_temp %>% 
           mutate(X5 = "")
       } else {
