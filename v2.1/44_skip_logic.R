@@ -58,7 +58,6 @@ tryCatch(
       }
       
       map <- map %>% 
-        unique() %>% 
         select(check_var_regex = X1,
                condition_var = X2,
                sign	= X3,
@@ -403,6 +402,7 @@ tryCatch(
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
+
 
 
 
