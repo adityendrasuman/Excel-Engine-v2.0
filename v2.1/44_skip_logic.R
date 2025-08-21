@@ -235,15 +235,17 @@ tryCatch(
         }
         
         multiple_q = T
+
+        expr <- rlang::parse_expr(condition_overall)
         
         apply_condn_on_data <- dt_02 %>% 
-          mutate(
-            xx_value = ifelse(is.na(eval(parse(text=condition_overall))), F, eval(parse(text=condition_overall))),
-            xx_condition = ifelse(xx_value, "met", "un-met"),
-            xx_response = case_when(
-              is.na(!!rlang::sym(q_no)) ~ "blank",
-              !!rlang::sym(q_no) == "" ~ "blank",
-              T ~ "value"
+          dplyr::mutate(
+            xx_value     = dplyr::coalesce(!!expr, FALSE),              # evaluate in data mask
+            xx_condition = dplyr::if_else(xx_value, "met", "un-met"),
+            xx_response  = dplyr::case_when(
+              is.na(.data[[q_no]]) ~ "blank",
+              trimws(dplyr::coalesce(as.character(.data[[q_no]]), "")) == "" ~ "blank",
+              TRUE ~ "value"
             )
           )
         
@@ -402,6 +404,7 @@ tryCatch(
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
+
 
 
 
