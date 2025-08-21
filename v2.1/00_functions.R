@@ -659,7 +659,7 @@ f_graph_2 <- function(.answer,
     mutate(response = forcats::fct_inorder(response)) %>% 
     mutate(!!x_top := forcats::fct_inorder(!!x_top))
   
-  ang <- ifelse(num_x_labels > 15, 90, 0) 
+  ang <- ifelse(num_x_labels > 7, 90, 0) 
   
   # ASSIGN X AXIS
   if (count_q > 1){
@@ -1478,6 +1478,7 @@ welch_ttest <- function(m1,
   
   return(dat)
 }
+
 
 
 
