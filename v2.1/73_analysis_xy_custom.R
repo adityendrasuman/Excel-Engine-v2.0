@@ -4,7 +4,7 @@ if (!is.null(dev.list())) dev.off()
 options(survey.lonely.psu="adjust")
 cat("\014")
 start_time <- Sys.time()
-# dev.config(nstr)
+dev.config(nstr)
 
 # capture variable coming from vba ----
 args <- commandArgs(trailingOnly=T)
@@ -485,5 +485,6 @@ print(glue::glue("\n\n All done!"))
 #   print(glue::glue("Finishing in: {4 - i} sec"))
 #   Sys.sleep(1)
 # }
+
 
 
