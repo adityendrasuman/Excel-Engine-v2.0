@@ -26,7 +26,7 @@ error = f_libraries(
 glue::glue("RUNNING R SERVER ...") %>% print()
 glue::glue("Package status: {error}") %>% print()
 glue::glue("\n") %>% print()
-dev.config(nstr)
+# dev.config(nstr)
 
 # Log of run ----
 glue::glue("===================== Running '73_analyse_xy_custom.R' =====================") %>% f_log_string(g_file_log) 
@@ -486,6 +486,7 @@ print(glue::glue("\n\n All done!"))
 #   print(glue::glue("Finishing in: {4 - i} sec"))
 #   Sys.sleep(1)
 # }
+
 
 
 
