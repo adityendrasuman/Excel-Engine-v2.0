@@ -29,7 +29,7 @@ glue::glue("\n") %>% print()
 # Log of run ----
 glue::glue("===================== Running '73_analyse_xy_custom.R' =====================") %>% f_log_string(g_file_log) 
 glue::glue("This analyses given y agianst one or more x variables, with custom filters") %>% f_log_string(g_file_log)
-run.strest("Testing modules")
+run.strest("modules")
 #====================================================
 stat <- "mean"           # (mean, median, total)
 
@@ -484,6 +484,7 @@ print(glue::glue("\n\n All done!"))
 #   print(glue::glue("Finishing in: {4 - i} sec"))
 #   Sys.sleep(1)
 # }
+
 
 
 
