@@ -61,7 +61,7 @@ tryCatch(
     
     # remove log file
     unlink(g_file_log)
-    workerstr("Testing environment")
+    # workerstr("Testing environment")
     
     # if reset then clean interface history folder
     if (args[5] == "reset") {
@@ -105,4 +105,5 @@ tryCatch(
     tcltk::tk_messageBox(type = c("ok"), msg, caption = "ERROR!", default = "", icon = "error")
   }
 )
+
 
