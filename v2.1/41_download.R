@@ -11,7 +11,7 @@ tryCatch(
     
     # set working director ---- 
     setwd(do.call(file.path, as.list(strsplit(args[1], "\\|")[[1]])))
-    testdev.cdr("Testing connection...")
+    # testdev.cdr("Testing connection...")
     
     # load environment ----
     load("env.RData")
@@ -115,4 +115,5 @@ tryCatch(
   }
 )
     
+
 
