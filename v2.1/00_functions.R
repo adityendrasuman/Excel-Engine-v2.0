@@ -204,8 +204,9 @@ f_answer_creator <- function(data, s, y, condition_2 = "T", stat, ...){
     
   data <- data %>% filter(!is.na(!!rlang::sym(y)))
   
+    rlang::system()
   if (s %in% colnames(d_summ) & !is.na(y) & y != ""){  
-    
+    rlang::system()
     id_cols = c(d_summ["ID", s])
     strata_cols = c(d_summ["STRATA", s]) %>% 
       strsplit("\\|")
@@ -1478,6 +1479,7 @@ welch_ttest <- function(m1,
   
   return(dat)
 }
+
 
 
 
